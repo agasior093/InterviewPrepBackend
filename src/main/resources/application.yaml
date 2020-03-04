@@ -1,0 +1,3 @@
+mongodb:
+  database: test
+  url: mongodb+srv://admin:78jGbjNvyE7SQvXF@adv-sdlxm.mongodb.net/{db}?retryWrites=true&w=majority

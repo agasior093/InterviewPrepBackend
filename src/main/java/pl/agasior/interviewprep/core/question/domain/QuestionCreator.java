@@ -12,10 +12,13 @@ class QuestionCreator {
         this.questionRepository = questionRepository;
     }
 
+    /*
+    TODO: Validations of command, tests, connecting with tag module
+     */
     CreateQuestionResult createQuestion(CreateQuestionCommand command) {
         final var question = buildQuestion(command);
         final var savedQuestion = questionRepository.save(question);
-        return new CreateQuestionResult(question.getId());
+        return new CreateQuestionResult(savedQuestion.getId());
     }
 
     private Question buildQuestion(final CreateQuestionCommand command) {
@@ -24,7 +27,7 @@ class QuestionCreator {
                     .answer(command.getAnswer())
                     .content(command.getContent())
                     .tags(command.getTags())
-                    .userId("admin")
+                    .userId("admin") //need to get user from security context
                     .creationDate(LocalDateTime.now())
                     .build();
     }

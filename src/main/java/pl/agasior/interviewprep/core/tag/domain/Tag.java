@@ -2,6 +2,7 @@ package pl.agasior.interviewprep.core.tag.domain;
 
 import lombok.Builder;
 import lombok.Data;
+import lombok.Getter;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 import pl.agasior.interviewprep.core.tag.dto.TagDto;
@@ -11,8 +12,8 @@ import pl.agasior.interviewprep.core.tag.dto.TagDto;
 @Builder
 class Tag {
     @Id
-    private String id;
-    private String value;
+    private final String id;
+    private final String value;
     private Integer occurrences;
 
     TagDto toDto() {

@@ -15,10 +15,10 @@ import java.util.Set;
 class Question {
     @Id
     private String id;
-    private String content;
-    private String answer;
-    private LocalDateTime creationDate;
-    private String userId;
-    private String ratingId;
-    private Set<String> tags;
+    private final String content;
+    private final String answer;
+    private final LocalDateTime creationDate;
+    private final String userId;
+    private final String ratingId; //
+    private final Set<String> tags;
 }

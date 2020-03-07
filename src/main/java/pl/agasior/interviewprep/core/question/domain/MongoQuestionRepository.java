@@ -24,13 +24,4 @@ class MongoQuestionRepository implements QuestionRepository {
         return null;
     }
 
-    @Override
-    public Optional<Question> find(final String id) {
-        return Optional.empty();
-    }
-
-    @Override
-    public Collection<Question> findAll() {
-        return mongoTemplate.findAll(Question.class);
-    }
 }

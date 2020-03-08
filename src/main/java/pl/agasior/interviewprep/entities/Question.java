@@ -2,7 +2,6 @@ package pl.agasior.interviewprep.entities;
 
 import lombok.Builder;
 import lombok.Getter;
-import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 
 import java.time.LocalDateTime;
@@ -11,9 +10,7 @@ import java.util.Set;
 @Document
 @Getter
 @Builder
-public class Question {
-    @Id
-    private String id;
+public class Question extends Identity {
     private final String title;
     private final String content;
     private final String answer;

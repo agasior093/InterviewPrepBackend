@@ -5,6 +5,7 @@ import org.springframework.stereotype.Repository;
 import pl.agasior.interviewprep.entities.Question;
 
 import java.util.List;
+import java.util.Optional;
 
 @Repository
 class MongoQuestionRepository implements QuestionRepository {
@@ -27,5 +28,10 @@ class MongoQuestionRepository implements QuestionRepository {
     @Override
     public List<Question> findAll() {
         return mongoTemplate.findAll(Question.class);
+    }
+
+    @Override
+    public Optional<Question> findById(String id) {
+        return Optional.empty();
     }
 }

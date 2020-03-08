@@ -20,7 +20,7 @@ public class Tag {
         return new TagDto(value);
     }
 
-    static Tag fromDto(TagDto dto) {
+    public static Tag fromDto(TagDto dto) {
         return Tag.builder().value(dto.getValue()).build();
     }
 }

@@ -1,10 +1,12 @@
 package pl.agasior.interviewprep.services.tag;
 
+import org.springframework.stereotype.Service;
 import pl.agasior.interviewprep.entities.Tag;
 import pl.agasior.interviewprep.repositories.TagRepository;
 
 import java.util.function.Supplier;
 
+@Service
 public class TagCreator {
     private final TagRepository repository;
 

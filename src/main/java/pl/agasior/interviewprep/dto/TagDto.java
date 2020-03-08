@@ -1,4 +1,4 @@
-package pl.agasior.interviewprep.core.tag.dto;
+package pl.agasior.interviewprep.dto;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;

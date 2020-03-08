@@ -1,15 +1,18 @@
-package pl.agasior.interviewprep.core.tag.domain;
+package pl.agasior.interviewprep.repositories;
 
-import lombok.RequiredArgsConstructor;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.stereotype.Repository;
+import pl.agasior.interviewprep.entities.Tag;
 
 import java.util.List;
 
 @Repository
-@RequiredArgsConstructor
 class MongoTagRepository implements TagRepository {
     private final MongoTemplate mongoTemplate;
+
+    MongoTagRepository(final MongoTemplate mongoTemplate) {
+        this.mongoTemplate = mongoTemplate;
+    }
 
     @Override
     public List<Tag> findAll() {

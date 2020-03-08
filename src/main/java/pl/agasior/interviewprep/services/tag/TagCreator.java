@@ -1,8 +1,11 @@
-package pl.agasior.interviewprep.core.tag.domain;
+package pl.agasior.interviewprep.services.tag;
+
+import pl.agasior.interviewprep.entities.Tag;
+import pl.agasior.interviewprep.repositories.TagRepository;
 
 import java.util.function.Supplier;
 
-class TagCreator {
+public class TagCreator {
     private final TagRepository repository;
 
     TagCreator(final TagRepository repository) {

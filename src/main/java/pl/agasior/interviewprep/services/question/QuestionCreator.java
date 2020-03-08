@@ -1,11 +1,15 @@
-package pl.agasior.interviewprep.core.question.domain;
+package pl.agasior.interviewprep.services.question;
 
-import pl.agasior.interviewprep.core.question.dto.CreateQuestionCommand;
-import pl.agasior.interviewprep.core.question.dto.CreateQuestionResult;
+import org.springframework.stereotype.Service;
+import pl.agasior.interviewprep.dto.CreateQuestionCommand;
+import pl.agasior.interviewprep.dto.CreateQuestionResult;
+import pl.agasior.interviewprep.entities.Question;
+import pl.agasior.interviewprep.repositories.QuestionRepository;
 
 import java.time.LocalDateTime;
 
-class QuestionCreator {
+@Service
+public class QuestionCreator {
     private final QuestionRepository questionRepository;
 
     QuestionCreator(QuestionRepository questionRepository) {
@@ -15,7 +19,7 @@ class QuestionCreator {
     /*
     TODO: Validations of command, tests, connecting with tag module
      */
-    CreateQuestionResult createQuestion(CreateQuestionCommand command) {
+    public CreateQuestionResult createQuestion(CreateQuestionCommand command) {
         final var question = buildQuestion(command);
         final var savedQuestion = questionRepository.save(question);
         return new CreateQuestionResult(savedQuestion.getId());

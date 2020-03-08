@@ -1,18 +1,18 @@
-package pl.agasior.interviewprep.core.tag.domain;
+package pl.agasior.interviewprep.entities;
 
 import lombok.Builder;
 import lombok.Data;
 import lombok.Getter;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
-import pl.agasior.interviewprep.core.tag.dto.TagDto;
+import pl.agasior.interviewprep.dto.TagDto;
 
 @Document
 @Data
 @Builder
-class Tag {
+public class Tag {
     @Id
-    private final String id;
+    private String id;
     private final String value;
     private Integer occurrences;
 

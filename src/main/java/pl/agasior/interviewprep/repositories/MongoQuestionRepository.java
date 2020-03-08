@@ -1,10 +1,10 @@
-package pl.agasior.interviewprep.core.question.domain;
+package pl.agasior.interviewprep.repositories;
 
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.stereotype.Repository;
+import pl.agasior.interviewprep.entities.Question;
 
-import java.util.Collection;
-import java.util.Optional;
+import java.util.List;
 
 @Repository
 class MongoQuestionRepository implements QuestionRepository {
@@ -24,4 +24,8 @@ class MongoQuestionRepository implements QuestionRepository {
         return null;
     }
 
+    @Override
+    public List<Question> findAll() {
+        return mongoTemplate.findAll(Question.class);
+    }
 }

@@ -32,6 +32,6 @@ class MongoQuestionRepository implements QuestionRepository {
 
     @Override
     public Optional<Question> findById(String id) {
-        return Optional.empty();
+        return Optional.ofNullable(mongoTemplate.findOne(QueryFactory.idQuery(id), Question.class));
     }
 }

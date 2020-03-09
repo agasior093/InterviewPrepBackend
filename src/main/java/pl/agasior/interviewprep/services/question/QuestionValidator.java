@@ -10,6 +10,7 @@ import pl.agasior.interviewprep.dto.exceptions.MissingIdOnUpdateException;
 
 import java.util.Set;
 
+//TODO - great place to use Vavr Validation
 @Component
 class QuestionValidator {
     private static final Integer MIN_TAGS_NUMBER = 1;

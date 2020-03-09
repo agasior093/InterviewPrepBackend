@@ -9,7 +9,6 @@ import java.util.Set;
 @Builder
 public class UpdateQuestionCommand {
     private final String id;
-    private final String title;
     private final String content;
     private final String answer;
     private final Set<String> tags;

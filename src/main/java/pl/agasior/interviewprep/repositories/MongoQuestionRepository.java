@@ -21,11 +21,6 @@ class MongoQuestionRepository implements QuestionRepository {
     }
 
     @Override
-    public Question update(final Question question) {
-        return null;
-    }
-
-    @Override
     public List<Question> findAll() {
         return mongoTemplate.findAll(Question.class);
     }

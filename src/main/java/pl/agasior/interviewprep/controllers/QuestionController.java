@@ -6,6 +6,8 @@ import org.springframework.web.bind.annotation.*;
 import pl.agasior.interviewprep.dto.CreateQuestionCommand;
 import pl.agasior.interviewprep.dto.CreateQuestionResult;
 import pl.agasior.interviewprep.dto.QuestionDto;
+import pl.agasior.interviewprep.dto.UpdateQuestionCommand;
+import pl.agasior.interviewprep.entities.Question;
 import pl.agasior.interviewprep.services.question.QuestionCreator;
 import pl.agasior.interviewprep.services.question.QuestionReader;
 import pl.agasior.interviewprep.services.question.QuestionUpdater;
@@ -30,6 +32,11 @@ class QuestionController {
     @PostMapping
     ResponseEntity<CreateQuestionResult> createQuestion(@RequestBody @Valid CreateQuestionCommand command) {
         return ResponseEntity.ok(questionCreator.createQuestion(command));
+    }
+
+    @PostMapping("/update")
+    ResponseEntity<Question> updateQuestion(@RequestBody @Valid UpdateQuestionCommand command) {
+        return ResponseEntity.ok(questionUpdater.updateQuestion(command));
     }
 
     @GetMapping("/query")

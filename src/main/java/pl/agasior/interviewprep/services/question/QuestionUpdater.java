@@ -8,12 +8,22 @@ import pl.agasior.interviewprep.repositories.QuestionRepository;
 @Service
 public class QuestionUpdater {
     private final QuestionRepository questionRepository;
+    private final QuestionValidator validator;
 
-    public QuestionUpdater(QuestionRepository questionRepository) {
+    QuestionUpdater(final QuestionRepository questionRepository, final QuestionValidator validator) {
         this.questionRepository = questionRepository;
+        this.validator = validator;
     }
 
     public Question updateQuestion(UpdateQuestionCommand command) {
-        return null;
+        validator.validateQuestionUpdate(command);
+        final var question = Question.builder()
+                .id(command.getId())
+                .content(command.getContent())
+                .answer(command.getAnswer())
+                .tags(command.getTags())
+                .build();
+        return questionRepository.save(question);
     }
+
 }

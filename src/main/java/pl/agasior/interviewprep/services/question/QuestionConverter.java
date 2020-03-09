@@ -10,7 +10,6 @@ class QuestionConverter {
     public QuestionDto toDto(Question entity) {
         return QuestionDto.builder()
                 .id(entity.getId())
-                .title(entity.getTitle())
                 .content(entity.getContent())
                 .answer(entity.getAnswer())
                 .userId(entity.getUserId())

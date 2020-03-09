@@ -9,7 +9,6 @@ import java.util.Set;
 @Builder
 public class CreateQuestionCommand {
     private final Set<String> tags;
-    private final String title;
     private final String content;
     private final String answer;
 }

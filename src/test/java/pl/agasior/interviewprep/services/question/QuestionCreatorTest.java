@@ -9,7 +9,6 @@ import org.junit.jupiter.params.provider.ValueSource;
 import pl.agasior.interviewprep.dto.CreateQuestionCommand;
 import pl.agasior.interviewprep.dto.exceptions.EmptyAnswerException;
 import pl.agasior.interviewprep.dto.exceptions.EmptyContentException;
-import pl.agasior.interviewprep.dto.exceptions.EmptyTitleException;
 import pl.agasior.interviewprep.dto.exceptions.InvalidTagsException;
 import pl.agasior.interviewprep.repositories.QuestionRepository;
 
@@ -17,14 +16,14 @@ import java.util.Set;
 
 public class QuestionCreatorTest {
     private final QuestionRepository questionRepository = new InMemoryQuestionRepository();
-    private final QuestionCreator questionCreator = new QuestionCreator(questionRepository);
+    private final QuestionValidator validator = new QuestionValidator(questionRepository);
+    private final QuestionCreator questionCreator = new QuestionCreator(questionRepository, validator);
 
     @Nested
     class CreateQuestion {
         @Test
         void validFields() {
             final var command = CreateQuestionCommand.builder()
-                    .title("testTitle")
                     .content("testContent")
                     .answer("testAnswer")
                     .tags(Set.of("testTag1", "testTag2")).build();
@@ -33,7 +32,6 @@ public class QuestionCreatorTest {
 
             questionRepository.findById(result.getQuestionId())
                     .ifPresentOrElse(question -> {
-                        Assertions.assertEquals(command.getTitle(), question.getTitle());
                         Assertions.assertEquals(command.getContent(), question.getContent());
                         Assertions.assertEquals(command.getAnswer(), question.getAnswer());
                         Assertions.assertEquals(command.getTags(), question.getTags());
@@ -42,27 +40,13 @@ public class QuestionCreatorTest {
     }
 
     @Nested
-    class ValidationException {
-
-        @ParameterizedTest
-        @NullAndEmptySource
-        @ValueSource(strings = {"  ", "\t", "\n"})
-        void emptyTitle(String title) {
-            final var command = CreateQuestionCommand.builder()
-                    .title(title)
-                    .content("testContent")
-                    .answer("testAnswer")
-                    .tags(Set.of("testTag1", "testTag2")).build();
-
-            Assertions.assertThrows(EmptyTitleException.class, () -> questionCreator.createQuestion(command));
-        }
+    class ThrowValidationException {
 
         @ParameterizedTest
         @NullAndEmptySource
         @ValueSource(strings = {"  ", "\t", "\n"})
         void emptyContent(String content) {
             final var command = CreateQuestionCommand.builder()
-                    .title("testTitle")
                     .content(content)
                     .answer("testAnswer")
                     .tags(Set.of("testTag1", "testTag2")).build();
@@ -75,7 +59,6 @@ public class QuestionCreatorTest {
         @ValueSource(strings = {"  ", "\t", "\n"})
         void emptyAnswer(String answer) {
             final var command = CreateQuestionCommand.builder()
-                    .title("testTitle")
                     .content("testContent")
                     .answer(answer)
                     .tags(Set.of("testTag1", "testTag2")).build();
@@ -87,7 +70,6 @@ public class QuestionCreatorTest {
         @Test
         void emptyTags() {
             final var command = CreateQuestionCommand.builder()
-                    .title("testTitle")
                     .content("testContent")
                     .answer("testAnswer")
                     .tags(Set.of()).build();
@@ -98,7 +80,6 @@ public class QuestionCreatorTest {
         @Test
         void nullTags() {
             final var command = CreateQuestionCommand.builder()
-                    .title("testTitle")
                     .content("testContent")
                     .answer("testAnswer")
                     .tags(null).build();
@@ -109,7 +90,6 @@ public class QuestionCreatorTest {
         @Test
         void tooManyTags() {
             final var command = CreateQuestionCommand.builder()
-                    .title("testTitle")
                     .content("testContent")
                     .answer("testAnswer")
                     .tags(Set.of("testTag1", "testTag2", "testTag3", "testTag4", "testTag5", "testTag6")).build();

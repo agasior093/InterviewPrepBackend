@@ -2,8 +2,8 @@ package pl.agasior.interviewprep.services.question;
 
 import org.springframework.stereotype.Component;
 import pl.agasior.interviewprep.dto.QuestionDto;
-import pl.agasior.interviewprep.dto.TagDto;
 import pl.agasior.interviewprep.entities.Question;
+import pl.agasior.interviewprep.entities.Tag;
 
 import java.util.stream.Collectors;
 
@@ -17,7 +17,7 @@ class QuestionConverter {
                 .content(entity.getContent())
                 .answer(entity.getAnswer())
                 .userId(entity.getUserId())
-                .tags(entity.getTags().stream().map(TagDto::new).collect(Collectors.toSet()))
+                .tags(entity.getTags())
                 .build();
     }
 }

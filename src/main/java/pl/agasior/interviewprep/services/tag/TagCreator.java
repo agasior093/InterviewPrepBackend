@@ -10,7 +10,7 @@ import java.util.function.Supplier;
 public class TagCreator {
     private final TagRepository repository;
 
-    TagCreator(final TagRepository repository) {
+    public TagCreator(final TagRepository repository) {
         this.repository = repository;
     }
 

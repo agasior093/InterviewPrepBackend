@@ -1,5 +1,6 @@
 package pl.agasior.interviewprep.services.question;
 
+import jdk.javadoc.doclet.Taglet;
 import org.springframework.stereotype.Service;
 import pl.agasior.interviewprep.dto.CreateQuestionCommand;
 import pl.agasior.interviewprep.dto.CreateQuestionResult;
@@ -8,9 +9,12 @@ import pl.agasior.interviewprep.dto.exceptions.EmptyContentException;
 import pl.agasior.interviewprep.dto.exceptions.EmptyTitleException;
 import pl.agasior.interviewprep.dto.exceptions.InvalidTagsException;
 import pl.agasior.interviewprep.entities.Question;
+import pl.agasior.interviewprep.entities.Tag;
 import pl.agasior.interviewprep.repositories.QuestionRepository;
+import pl.agasior.interviewprep.services.tag.TagCreator;
 
 import java.time.LocalDateTime;
+import java.util.stream.Collectors;
 
 @Service
 public class QuestionCreator {
@@ -18,14 +22,17 @@ public class QuestionCreator {
     private static final Integer MAX_TAGS_NUMBER = 5;
 
     private final QuestionRepository questionRepository;
+    private final TagCreator tagCreator;
 
-    QuestionCreator(QuestionRepository questionRepository) {
+    QuestionCreator(QuestionRepository questionRepository, TagCreator tagCreator) {
         this.questionRepository = questionRepository;
+        this.tagCreator = tagCreator;
     }
 
     public CreateQuestionResult createQuestion(CreateQuestionCommand command) {
         validate(command);
         final var question = buildQuestion(command);
+        question.getTags().forEach(tagCreator::createIfAbsent);
         final var savedQuestion = questionRepository.save(question);
         return new CreateQuestionResult(savedQuestion.getId());
     }
@@ -35,7 +42,7 @@ public class QuestionCreator {
                 .title(command.getTitle())
                 .answer(command.getAnswer())
                 .content(command.getContent())
-                .tags(command.getTags())
+                .tags(command.getTags().stream().map(Tag::new).collect(Collectors.toSet()))
                 .userId("admin") //need to get user from security context
                 .creationDate(LocalDateTime.now())
                 .build();

@@ -12,12 +12,17 @@ import pl.agasior.interviewprep.dto.exceptions.EmptyContentException;
 import pl.agasior.interviewprep.dto.exceptions.EmptyTitleException;
 import pl.agasior.interviewprep.dto.exceptions.InvalidTagsException;
 import pl.agasior.interviewprep.repositories.QuestionRepository;
+import pl.agasior.interviewprep.repositories.TagRepository;
+import pl.agasior.interviewprep.services.tag.InMemoryTagRepository;
+import pl.agasior.interviewprep.services.tag.TagCreator;
 
 import java.util.Set;
 
 public class QuestionCreatorTest {
     private final QuestionRepository questionRepository = new InMemoryQuestionRepository();
-    private final QuestionCreator questionCreator = new QuestionCreator(questionRepository);
+    private final TagRepository tagRepository = new InMemoryTagRepository();
+    private final TagCreator tagCreator = new TagCreator(tagRepository);
+    private final QuestionCreator questionCreator = new QuestionCreator(questionRepository, tagCreator);
 
     @Nested
     class CreateQuestion {

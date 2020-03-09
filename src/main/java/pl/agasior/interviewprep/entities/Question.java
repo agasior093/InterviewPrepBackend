@@ -17,5 +17,5 @@ public class Question extends Identity {
     private final LocalDateTime creationDate;
     private final String userId;
     private final String ratingId;
-    private final Set<String> tags;
+    private final Set<Tag> tags;
 }

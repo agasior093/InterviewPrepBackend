@@ -1,6 +1,5 @@
 package pl.agasior.interviewprep.controllers;
 
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import pl.agasior.interviewprep.dto.CreateQuestionCommand;
@@ -21,19 +20,20 @@ class QuestionController {
     private final QuestionUpdater questionUpdater;
     private final QuestionReader questionReader;
 
-    QuestionController(final QuestionCreator questionCreator, final QuestionUpdater questionUpdater, final QuestionReader questionReader) {
+    QuestionController(final QuestionCreator questionCreator, final QuestionUpdater questionUpdater,
+                       final QuestionReader questionReader) {
         this.questionCreator = questionCreator;
         this.questionUpdater = questionUpdater;
         this.questionReader = questionReader;
     }
 
     @PostMapping
-    ResponseEntity<CreateQuestionResult> createQuestion(@RequestBody @Valid CreateQuestionCommand command) {
+    public ResponseEntity<CreateQuestionResult> createQuestion(@RequestBody @Valid CreateQuestionCommand command) {
         return ResponseEntity.ok(questionCreator.createQuestion(command));
     }
 
     @GetMapping("/query")
-    ResponseEntity<List<QuestionDto>> queryQuestions() {
+    public ResponseEntity<List<QuestionDto>> queryQuestions() {
         return ResponseEntity.ok(questionReader.getAllQuestions());
     }
 }

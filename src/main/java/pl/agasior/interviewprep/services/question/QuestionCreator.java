@@ -1,8 +1,7 @@
 package pl.agasior.interviewprep.services.question;
 
 import org.springframework.stereotype.Service;
-import pl.agasior.interviewprep.dto.CreateQuestionCommand;
-import pl.agasior.interviewprep.dto.CreateQuestionResult;
+import pl.agasior.interviewprep.dto.CreateQuestionRequest;
 import pl.agasior.interviewprep.entities.Question;
 import pl.agasior.interviewprep.repositories.QuestionRepository;
 
@@ -11,21 +10,17 @@ import java.time.LocalDateTime;
 @Service
 public class QuestionCreator {
     private final QuestionRepository questionRepository;
-    private final QuestionValidator validator;
 
-    QuestionCreator(final QuestionRepository questionRepository, final QuestionValidator validator) {
+    QuestionCreator(final QuestionRepository questionRepository) {
         this.questionRepository = questionRepository;
-        this.validator = validator;
     }
 
-    public CreateQuestionResult createQuestion(CreateQuestionCommand command) {
-        validator.validateQuestionCreation(command);
+    public Question createQuestion(CreateQuestionRequest command) {
         final var question = buildQuestion(command);
-        final var savedQuestion = questionRepository.save(question);
-        return new CreateQuestionResult(savedQuestion.getId());
+        return questionRepository.save(question);
     }
 
-    private Question buildQuestion(final CreateQuestionCommand command) {
+    private Question buildQuestion(final CreateQuestionRequest command) {
         return Question.builder()
                 .answer(command.getAnswer())
                 .content(command.getContent())

@@ -1,100 +1,30 @@
 package pl.agasior.interviewprep.services.question;
 
 import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.params.ParameterizedTest;
-import org.junit.jupiter.params.provider.NullAndEmptySource;
-import org.junit.jupiter.params.provider.ValueSource;
-import pl.agasior.interviewprep.dto.CreateQuestionCommand;
-import pl.agasior.interviewprep.dto.exceptions.EmptyAnswerException;
-import pl.agasior.interviewprep.dto.exceptions.EmptyContentException;
-import pl.agasior.interviewprep.dto.exceptions.InvalidTagsException;
+import pl.agasior.interviewprep.dto.CreateQuestionRequest;
 import pl.agasior.interviewprep.repositories.QuestionRepository;
 
 import java.util.Set;
 
 public class QuestionCreatorTest {
     private final QuestionRepository questionRepository = new InMemoryQuestionRepository();
-    private final QuestionCreator questionCreator = new QuestionCreator(questionRepository, new QuestionValidator());
+    private final QuestionCreator questionCreator = new QuestionCreator(questionRepository);
 
-    @Nested
-    class CreateQuestion {
-        @Test
-        void validFields() {
-            final var command = CreateQuestionCommand.builder()
-                    .content("testContent")
-                    .answer("testAnswer")
-                    .tags(Set.of("testTag1", "testTag2")).build();
+    @Test
+    void createQuestionWithValidFields() {
+        final var command = CreateQuestionRequest.builder()
+                .content("testContent")
+                .answer("testAnswer")
+                .tags(Set.of("testTag1", "testTag2")).build();
 
-            final var result = questionCreator.createQuestion(command);
+        final var result = questionCreator.createQuestion(command);
 
-            questionRepository.findById(result.getQuestionId())
-                    .ifPresentOrElse(question -> {
-                        Assertions.assertEquals(command.getContent(), question.getContent());
-                        Assertions.assertEquals(command.getAnswer(), question.getAnswer());
-                        Assertions.assertEquals(command.getTags(), question.getTags());
-                    }, Assertions::fail);
-        }
+        questionRepository.findById(result.getId())
+                .ifPresentOrElse(question -> {
+                    Assertions.assertEquals(command.getContent(), question.getContent());
+                    Assertions.assertEquals(command.getAnswer(), question.getAnswer());
+                    Assertions.assertEquals(command.getTags(), question.getTags());
+                }, Assertions::fail);
     }
-
-    @Nested
-    class ThrowValidationException {
-
-        @ParameterizedTest
-        @NullAndEmptySource
-        @ValueSource(strings = {"  ", "\t", "\n"})
-        void emptyContent(String content) {
-            final var command = CreateQuestionCommand.builder()
-                    .content(content)
-                    .answer("testAnswer")
-                    .tags(Set.of("testTag1", "testTag2")).build();
-
-            Assertions.assertThrows(EmptyContentException.class, () -> questionCreator.createQuestion(command));
-        }
-
-
-        @ParameterizedTest
-        @ValueSource(strings = {"  ", "\t", "\n"})
-        void emptyAnswer(String answer) {
-            final var command = CreateQuestionCommand.builder()
-                    .content("testContent")
-                    .answer(answer)
-                    .tags(Set.of("testTag1", "testTag2")).build();
-
-            Assertions.assertThrows(EmptyAnswerException.class, () -> questionCreator.createQuestion(command));
-        }
-
-
-        @Test
-        void emptyTags() {
-            final var command = CreateQuestionCommand.builder()
-                    .content("testContent")
-                    .answer("testAnswer")
-                    .tags(Set.of()).build();
-
-            Assertions.assertThrows(InvalidTagsException.class, () -> questionCreator.createQuestion(command));
-        }
-
-        @Test
-        void nullTags() {
-            final var command = CreateQuestionCommand.builder()
-                    .content("testContent")
-                    .answer("testAnswer")
-                    .tags(null).build();
-
-            Assertions.assertThrows(InvalidTagsException.class, () -> questionCreator.createQuestion(command));
-        }
-
-        @Test
-        void tooManyTags() {
-            final var command = CreateQuestionCommand.builder()
-                    .content("testContent")
-                    .answer("testAnswer")
-                    .tags(Set.of("testTag1", "testTag2", "testTag3", "testTag4", "testTag5", "testTag6")).build();
-
-            Assertions.assertThrows(InvalidTagsException.class, () -> questionCreator.createQuestion(command));
-        }
-    }
-
 }

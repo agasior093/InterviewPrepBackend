@@ -1,12 +1,9 @@
 package pl.agasior.interviewprep.controllers;
 
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import pl.agasior.interviewprep.dto.CreateQuestionCommand;
-import pl.agasior.interviewprep.dto.CreateQuestionResult;
-import pl.agasior.interviewprep.dto.QuestionDto;
-import pl.agasior.interviewprep.dto.UpdateQuestionCommand;
+import pl.agasior.interviewprep.dto.CreateQuestionRequest;
+import pl.agasior.interviewprep.dto.UpdateQuestionRequest;
 import pl.agasior.interviewprep.entities.Question;
 import pl.agasior.interviewprep.services.question.QuestionCreator;
 import pl.agasior.interviewprep.services.question.QuestionReader;
@@ -30,17 +27,17 @@ class QuestionController {
     }
 
     @PostMapping
-    ResponseEntity<CreateQuestionResult> createQuestion(@RequestBody @Valid CreateQuestionCommand command) {
+    ResponseEntity<Question> createQuestion(@RequestBody @Valid CreateQuestionRequest command) {
         return ResponseEntity.ok(questionCreator.createQuestion(command));
     }
 
     @PatchMapping("/update")
-    ResponseEntity<Question> updateQuestion(@RequestBody @Valid UpdateQuestionCommand command) {
+    ResponseEntity<Question> updateQuestion(@RequestBody @Valid UpdateQuestionRequest command) {
         return ResponseEntity.ok(questionUpdater.updateQuestion(command));
     }
 
     @GetMapping("/query")
-    ResponseEntity<List<QuestionDto>> queryQuestions() {
+    ResponseEntity<List<Question>> queryQuestions() {
         return ResponseEntity.ok(questionReader.getAllQuestions());
     }
 }

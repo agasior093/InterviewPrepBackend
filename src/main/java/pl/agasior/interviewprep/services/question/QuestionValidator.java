@@ -3,8 +3,10 @@ package pl.agasior.interviewprep.services.question;
 import org.springframework.stereotype.Component;
 import pl.agasior.interviewprep.dto.CreateQuestionCommand;
 import pl.agasior.interviewprep.dto.UpdateQuestionCommand;
-import pl.agasior.interviewprep.dto.exceptions.*;
-import pl.agasior.interviewprep.repositories.QuestionRepository;
+import pl.agasior.interviewprep.dto.exceptions.EmptyAnswerException;
+import pl.agasior.interviewprep.dto.exceptions.EmptyContentException;
+import pl.agasior.interviewprep.dto.exceptions.InvalidTagsException;
+import pl.agasior.interviewprep.dto.exceptions.MissingIdOnUpdateException;
 
 import java.util.Set;
 
@@ -12,12 +14,6 @@ import java.util.Set;
 class QuestionValidator {
     private static final Integer MIN_TAGS_NUMBER = 1;
     private static final Integer MAX_TAGS_NUMBER = 5;
-
-    private final QuestionRepository questionRepository;
-
-    QuestionValidator(final QuestionRepository questionRepository) {
-        this.questionRepository = questionRepository;
-    }
 
     void validateQuestionCreation(CreateQuestionCommand command) {
         validateContent(command.getContent());
@@ -27,7 +23,6 @@ class QuestionValidator {
 
     void validateQuestionUpdate(UpdateQuestionCommand command) {
         validateId(command.getId());
-        validateQuestionExistence(command.getId());
         validateContent(command.getContent());
         validateAnswer(command.getAnswer());
         validateTags(command.getTags());
@@ -35,10 +30,6 @@ class QuestionValidator {
 
     private void validateId(final String id) {
         if(id == null || id.isBlank()) throw new MissingIdOnUpdateException();
-    }
-
-    private void validateQuestionExistence(final String id) {
-        if (questionRepository.findById(id).isEmpty()) throw new QuestionNotFoundException(id);
     }
 
     private void validateTags(final Set<String> tags) {

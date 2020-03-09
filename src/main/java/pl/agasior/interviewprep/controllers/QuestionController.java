@@ -34,7 +34,7 @@ class QuestionController {
         return ResponseEntity.ok(questionCreator.createQuestion(command));
     }
 
-    @PostMapping("/update")
+    @PatchMapping("/update")
     ResponseEntity<Question> updateQuestion(@RequestBody @Valid UpdateQuestionCommand command) {
         return ResponseEntity.ok(questionUpdater.updateQuestion(command));
     }

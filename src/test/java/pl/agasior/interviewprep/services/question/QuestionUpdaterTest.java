@@ -11,12 +11,12 @@ import pl.agasior.interviewprep.dto.exceptions.*;
 import pl.agasior.interviewprep.entities.Question;
 import pl.agasior.interviewprep.repositories.QuestionRepository;
 
+import java.time.LocalDateTime;
 import java.util.Set;
 
 public class QuestionUpdaterTest {
     private final QuestionRepository repository = new InMemoryQuestionRepository();
-    private final QuestionValidator validator = new QuestionValidator(repository);
-    private final QuestionUpdater questionUpdater = new QuestionUpdater(repository, validator);
+    private final QuestionUpdater questionUpdater = new QuestionUpdater(repository, new QuestionValidator());
 
     @Nested
     class UpdateQuestion {
@@ -37,6 +37,8 @@ public class QuestionUpdaterTest {
                 Assertions.assertEquals(updateCommand.getContent(), updatedQuestion.getContent());
                 Assertions.assertEquals(question.getAnswer(), updatedQuestion.getAnswer());
                 Assertions.assertEquals(question.getTags(), updatedQuestion.getTags());
+                Assertions.assertEquals(question.getUserId(), updatedQuestion.getUserId());
+                Assertions.assertEquals(question.getCreationDate(), updatedQuestion.getCreationDate());
             }, Assertions::fail);
         }
 
@@ -53,9 +55,11 @@ public class QuestionUpdaterTest {
             final var result = questionUpdater.updateQuestion(updateCommand);
 
             repository.findById(result.getId()).ifPresentOrElse(updatedQuestion -> {
-                Assertions.assertEquals(question.getContent(), updatedQuestion.getContent());
                 Assertions.assertEquals(updateCommand.getAnswer(), updatedQuestion.getAnswer());
+                Assertions.assertEquals(question.getContent(), updatedQuestion.getContent());
                 Assertions.assertEquals(question.getTags(), updatedQuestion.getTags());
+                Assertions.assertEquals(question.getUserId(), updatedQuestion.getUserId());
+                Assertions.assertEquals(question.getCreationDate(), updatedQuestion.getCreationDate());
             }, Assertions::fail);
         }
 
@@ -72,9 +76,11 @@ public class QuestionUpdaterTest {
             final var result = questionUpdater.updateQuestion(updateCommand);
 
             repository.findById(result.getId()).ifPresentOrElse(updatedQuestion -> {
+                Assertions.assertEquals(updateCommand.getTags(), updatedQuestion.getTags());
                 Assertions.assertEquals(question.getContent(), updatedQuestion.getContent());
                 Assertions.assertEquals(question.getAnswer(), updatedQuestion.getAnswer());
-                Assertions.assertEquals(updateCommand.getTags(), updatedQuestion.getTags());
+                Assertions.assertEquals(question.getUserId(), updatedQuestion.getUserId());
+                Assertions.assertEquals(question.getCreationDate(), updatedQuestion.getCreationDate());
             }, Assertions::fail);
         }
     }
@@ -176,6 +182,8 @@ public class QuestionUpdaterTest {
                 .content("testContent")
                 .answer("testAnswer")
                 .tags(Set.of("testTag"))
+                .userId("testUser")
+                .creationDate(LocalDateTime.now())
                 .build());
     }
 }

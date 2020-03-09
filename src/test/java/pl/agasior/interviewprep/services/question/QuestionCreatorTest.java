@@ -16,8 +16,7 @@ import java.util.Set;
 
 public class QuestionCreatorTest {
     private final QuestionRepository questionRepository = new InMemoryQuestionRepository();
-    private final QuestionValidator validator = new QuestionValidator(questionRepository);
-    private final QuestionCreator questionCreator = new QuestionCreator(questionRepository, validator);
+    private final QuestionCreator questionCreator = new QuestionCreator(questionRepository, new QuestionValidator());
 
     @Nested
     class CreateQuestion {

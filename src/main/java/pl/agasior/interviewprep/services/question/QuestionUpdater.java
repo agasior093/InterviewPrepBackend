@@ -2,6 +2,7 @@ package pl.agasior.interviewprep.services.question;
 
 import org.springframework.stereotype.Service;
 import pl.agasior.interviewprep.dto.UpdateQuestionCommand;
+import pl.agasior.interviewprep.dto.exceptions.QuestionNotFoundException;
 import pl.agasior.interviewprep.entities.Question;
 import pl.agasior.interviewprep.repositories.QuestionRepository;
 
@@ -17,13 +18,20 @@ public class QuestionUpdater {
 
     public Question updateQuestion(UpdateQuestionCommand command) {
         validator.validateQuestionUpdate(command);
-        final var question = Question.builder()
-                .id(command.getId())
-                .content(command.getContent())
-                .answer(command.getAnswer())
-                .tags(command.getTags())
-                .build();
-        return questionRepository.save(question);
+        return questionRepository.findById(command.getId())
+                .map(question -> update(question, command))
+                .orElseThrow(() -> new QuestionNotFoundException(command.getId()));
+    }
+
+    private Question update(Question question, UpdateQuestionCommand updateCommand) {
+        return questionRepository.save(Question.builder()
+                .id(question.getId())
+                .creationDate(question.getCreationDate())
+                .userId(question.getUserId())
+                .content(updateCommand.getContent())
+                .answer(updateCommand.getAnswer())
+                .tags(updateCommand.getTags())
+                .build());
     }
 
 }

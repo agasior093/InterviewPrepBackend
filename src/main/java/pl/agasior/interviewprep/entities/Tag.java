@@ -1,26 +1,21 @@
 package pl.agasior.interviewprep.entities;
 
 import lombok.Builder;
-import lombok.Data;
+import lombok.EqualsAndHashCode;
 import lombok.Getter;
-import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
-import pl.agasior.interviewprep.dto.TagDto;
 
+@EqualsAndHashCode(callSuper = true)
 @Document
-@Data
-@Builder
-public class Tag {
-    @Id
-    private String id;
+@Getter
+public class Tag extends Identity {
     private final String value;
-    private Integer occurrences;
+    private final Integer occurrences;
 
-    TagDto toDto() {
-        return new TagDto(value);
-    }
-
-    static Tag fromDto(TagDto dto) {
-        return Tag.builder().value(dto.getValue()).build();
+    @Builder
+    Tag(final String id, final String value, final Integer occurrences) {
+        super(id);
+        this.value = value;
+        this.occurrences = occurrences;
     }
 }

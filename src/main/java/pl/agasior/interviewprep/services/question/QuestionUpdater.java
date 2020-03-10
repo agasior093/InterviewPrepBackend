@@ -6,13 +6,16 @@ import pl.agasior.interviewprep.dto.UpdateQuestionRequest;
 import pl.agasior.interviewprep.dto.exceptions.QuestionNotFoundException;
 import pl.agasior.interviewprep.entities.Question;
 import pl.agasior.interviewprep.repositories.QuestionRepository;
+import pl.agasior.interviewprep.services.tag.TagCreator;
 
 @Service
 public class QuestionUpdater {
     private final QuestionRepository questionRepository;
+    private final TagCreator tagCreator;
 
-    QuestionUpdater(final QuestionRepository questionRepository) {
+    QuestionUpdater(final QuestionRepository questionRepository, final TagCreator tagCreator) {
         this.questionRepository = questionRepository;
+        this.tagCreator = tagCreator;
     }
 
     public Question updateQuestion(UpdateQuestionRequest command) {
@@ -22,6 +25,7 @@ public class QuestionUpdater {
     }
 
     private Question update(Question question, UpdateQuestionRequest updateCommand) {
+        updateCommand.getTags().forEach(tagCreator::createIfAbsent);
         return questionRepository.save(Question.builder()
                 .id(question.getId())
                 .creationDate(question.getCreationDate())

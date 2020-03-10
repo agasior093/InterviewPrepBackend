@@ -20,7 +20,8 @@ class QuestionController {
     private final QuestionUpdater questionUpdater;
     private final QuestionReader questionReader;
 
-    QuestionController(final QuestionCreator questionCreator, final QuestionUpdater questionUpdater, final QuestionReader questionReader) {
+    QuestionController(final QuestionCreator questionCreator, final QuestionUpdater questionUpdater,
+                       final QuestionReader questionReader) {
         this.questionCreator = questionCreator;
         this.questionUpdater = questionUpdater;
         this.questionReader = questionReader;
@@ -37,7 +38,7 @@ class QuestionController {
     }
 
     @GetMapping("/query")
-    ResponseEntity<List<Question>> queryQuestions() {
+    public ResponseEntity<List<Question>> queryQuestions() {
         return ResponseEntity.ok(questionReader.getAllQuestions());
     }
 }

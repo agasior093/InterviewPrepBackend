@@ -6,13 +6,18 @@ import pl.agasior.interviewprep.dto.UpdateQuestionRequest;
 import pl.agasior.interviewprep.dto.exceptions.QuestionNotFoundException;
 import pl.agasior.interviewprep.entities.Question;
 import pl.agasior.interviewprep.repositories.QuestionRepository;
+import pl.agasior.interviewprep.repositories.TagRepository;
+import pl.agasior.interviewprep.services.tag.InMemoryTagRepository;
+import pl.agasior.interviewprep.services.tag.TagCreator;
 
 import java.time.LocalDateTime;
 import java.util.Set;
 
 public class QuestionUpdaterTest {
     private final QuestionRepository repository = new InMemoryQuestionRepository();
-    private final QuestionUpdater questionUpdater = new QuestionUpdater(repository);
+    private final TagRepository tagRepository = new InMemoryTagRepository();
+    private final TagCreator tagCreator = new TagCreator(tagRepository);
+    private final QuestionUpdater questionUpdater = new QuestionUpdater(repository, tagCreator);
 
     @Test
     void modifyContent() {

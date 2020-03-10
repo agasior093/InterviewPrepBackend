@@ -8,7 +8,7 @@ import java.util.List;
 import java.util.Optional;
 
 @Repository
-class MongoQuestionRepository implements QuestionRepository {
+public class MongoQuestionRepository implements QuestionRepository {
     private final MongoTemplate mongoTemplate;
 
     MongoQuestionRepository(final MongoTemplate mongoTemplate) {

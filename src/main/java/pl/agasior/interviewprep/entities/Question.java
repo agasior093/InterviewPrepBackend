@@ -1,13 +1,14 @@
 package pl.agasior.interviewprep.entities;
 
 import lombok.Builder;
+import lombok.EqualsAndHashCode;
 import lombok.Getter;
-import lombok.experimental.SuperBuilder;
 import org.springframework.data.mongodb.core.mapping.Document;
 
 import java.time.LocalDateTime;
 import java.util.Set;
 
+@EqualsAndHashCode(callSuper = true)
 @Document
 @Getter
 public class Question extends Identity {

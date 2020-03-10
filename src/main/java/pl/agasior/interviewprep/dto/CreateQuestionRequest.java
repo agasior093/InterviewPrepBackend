@@ -21,5 +21,4 @@ public class CreateQuestionRequest {
     @NotNull(message = "Tags may not be null")
     @Size(min = 1, max = 5, message = "Tags must contain at least 1 and at most 5 elements")
     private final Set<String> tags;
-
 }

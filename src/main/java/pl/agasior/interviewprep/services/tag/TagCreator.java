@@ -25,7 +25,7 @@ public class TagCreator {
     }
 
     private Tag incrementOccurrences(Tag tag) {
-        final var updatedTag = Tag.builder().value(tag.getValue()).occurrences(tag.getOccurrences() + 1).build();
+        final var updatedTag = Tag.builder().id(tag.getId()).value(tag.getValue()).occurrences(tag.getOccurrences() + 1).build();
         return repository.save(updatedTag);
     }
 }

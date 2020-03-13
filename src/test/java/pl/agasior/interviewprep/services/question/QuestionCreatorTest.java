@@ -13,7 +13,7 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.WebApplicationContext;
 import pl.agasior.interviewprep.dto.CreateQuestionRequest;
-import pl.agasior.interviewprep.repositories.MongoQuestionRepository;
+import pl.agasior.interviewprep.repositories.QuestionRepository;
 import pl.agasior.interviewprep.testutils.DatabasePreparer;
 import pl.agasior.interviewprep.testutils.RequestFactory;
 import pl.agasior.interviewprep.testutils.ResponseParser;
@@ -36,7 +36,7 @@ public class QuestionCreatorTest {
     private DatabasePreparer databasePreparer;
 
     @Autowired
-    private MongoQuestionRepository questionRepository;
+    private QuestionRepository questionRepository;
 
     private final MockMvc mockMvc;
 

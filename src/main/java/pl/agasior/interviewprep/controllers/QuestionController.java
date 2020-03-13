@@ -32,12 +32,12 @@ class QuestionController {
         return ResponseEntity.ok(questionCreator.createQuestion(command));
     }
 
-    @PatchMapping("/update")
+    @PatchMapping
     ResponseEntity<Question> updateQuestion(@RequestBody @Valid UpdateQuestionRequest command) {
         return ResponseEntity.ok(questionUpdater.updateQuestion(command));
     }
 
-    @GetMapping("/query")
+    @GetMapping
     public ResponseEntity<List<Question>> queryQuestions() {
         return ResponseEntity.ok(questionReader.getAllQuestions());
     }

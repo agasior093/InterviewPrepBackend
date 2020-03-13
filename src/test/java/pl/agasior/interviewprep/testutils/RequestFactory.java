@@ -41,7 +41,7 @@ public class RequestFactory {
     }
 
     private MockHttpServletRequestBuilder patchRequest(String url, String body) {
-        return MockMvcRequestBuilders.post(url)
+        return MockMvcRequestBuilders.patch(url)
                 .content(body)
                 .header("Content-Type", "application/json")
                 .characterEncoding(StandardCharsets.UTF_8.name());

@@ -25,7 +25,7 @@ public class QuestionUpdater {
     }
 
     private Question update(Question question, UpdateQuestionRequest updateCommand) {
-        updateCommand.getTags().forEach(tagCreator::createIfAbsent);
+        if(updateCommand.getTags() != null) updateCommand.getTags().forEach(tagCreator::createIfAbsent);
         return questionRepository.save(Question.builder()
                 .id(question.getId())
                 .creationDate(question.getCreationDate())

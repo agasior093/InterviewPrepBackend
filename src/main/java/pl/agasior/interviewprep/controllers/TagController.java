@@ -11,7 +11,7 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/tag")
-public class TagController {
+class TagController {
     private final TagReader tagReader;
 
     TagController(TagReader tagReader) {
@@ -19,7 +19,7 @@ public class TagController {
     }
 
     @GetMapping
-    public ResponseEntity<List<Tag>> getTags() {
+    ResponseEntity<List<Tag>> getTags() {
         return ResponseEntity.ok(tagReader.getTagsByOccurrences());
     }
 }

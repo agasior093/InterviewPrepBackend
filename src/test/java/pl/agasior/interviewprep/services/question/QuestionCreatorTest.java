@@ -1,126 +1,77 @@
 package pl.agasior.interviewprep.services.question;
 
 import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.Nested;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.params.ParameterizedTest;
-import org.junit.jupiter.params.provider.NullAndEmptySource;
-import org.junit.jupiter.params.provider.ValueSource;
-import pl.agasior.interviewprep.dto.CreateQuestionCommand;
-import pl.agasior.interviewprep.dto.exceptions.EmptyAnswerException;
-import pl.agasior.interviewprep.dto.exceptions.EmptyContentException;
-import pl.agasior.interviewprep.dto.exceptions.EmptyTitleException;
-import pl.agasior.interviewprep.dto.exceptions.InvalidTagsException;
-import pl.agasior.interviewprep.repositories.QuestionRepository;
-import pl.agasior.interviewprep.repositories.TagRepository;
-import pl.agasior.interviewprep.services.tag.InMemoryTagRepository;
-import pl.agasior.interviewprep.services.tag.TagCreator;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.context.ActiveProfiles;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
+import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.setup.MockMvcBuilders;
+import org.springframework.web.context.WebApplicationContext;
+import pl.agasior.interviewprep.dto.CreateQuestionRequest;
+import pl.agasior.interviewprep.entities.Question;
+import pl.agasior.interviewprep.repositories.MongoQuestionRepository;
+import pl.agasior.interviewprep.testutils.DatabasePreparer;
+import pl.agasior.interviewprep.testutils.RequestFactory;
+import pl.agasior.interviewprep.testutils.ResponseParser;
 
 import java.util.Set;
+import java.util.function.Consumer;
 
+import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+
+@ExtendWith(SpringExtension.class)
+@SpringBootTest
+@ActiveProfiles("test")
 public class QuestionCreatorTest {
-    private final QuestionRepository questionRepository = new InMemoryQuestionRepository();
-    private final TagRepository tagRepository = new InMemoryTagRepository();
-    private final TagCreator tagCreator = new TagCreator(tagRepository);
-    private final QuestionCreator questionCreator = new QuestionCreator(questionRepository, tagCreator);
 
-    @Nested
-    class CreateQuestion {
-        @Test
-        void validFields() {
-            final var command = CreateQuestionCommand.builder()
-                    .title("testTitle")
-                    .content("testContent")
-                    .answer("testAnswer")
-                    .tags(Set.of("testTag1", "testTag2")).build();
+    @Autowired
+    private RequestFactory requestFactory;
 
-            final var result = questionCreator.createQuestion(command);
+    @Autowired
+    private DatabasePreparer databasePreparer;
 
-            questionRepository.findById(result.getQuestionId())
-                    .ifPresentOrElse(question -> {
-                        Assertions.assertEquals(command.getTitle(), question.getTitle());
-                        Assertions.assertEquals(command.getContent(), question.getContent());
-                        Assertions.assertEquals(command.getAnswer(), question.getAnswer());
-                        Assertions.assertEquals(command.getTags(), question.getTags());
-                    }, Assertions::fail);
-        }
+    @Autowired
+    private MongoQuestionRepository questionRepository;
+
+    private final MockMvc mockMvc;
+
+    QuestionCreatorTest(WebApplicationContext webApplicationContext) {
+        this.mockMvc = MockMvcBuilders.webAppContextSetup(webApplicationContext).build();
     }
 
-    @Nested
-    class ValidationException {
-
-        @ParameterizedTest
-        @NullAndEmptySource
-        @ValueSource(strings = {"  ", "\t", "\n"})
-        void emptyTitle(String title) {
-            final var command = CreateQuestionCommand.builder()
-                    .title(title)
-                    .content("testContent")
-                    .answer("testAnswer")
-                    .tags(Set.of("testTag1", "testTag2")).build();
-
-            Assertions.assertThrows(EmptyTitleException.class, () -> questionCreator.createQuestion(command));
-        }
-
-        @ParameterizedTest
-        @NullAndEmptySource
-        @ValueSource(strings = {"  ", "\t", "\n"})
-        void emptyContent(String content) {
-            final var command = CreateQuestionCommand.builder()
-                    .title("testTitle")
-                    .content(content)
-                    .answer("testAnswer")
-                    .tags(Set.of("testTag1", "testTag2")).build();
-
-            Assertions.assertThrows(EmptyContentException.class, () -> questionCreator.createQuestion(command));
-        }
-
-
-        @ParameterizedTest
-        @ValueSource(strings = {"  ", "\t", "\n"})
-        void emptyAnswer(String answer) {
-            final var command = CreateQuestionCommand.builder()
-                    .title("testTitle")
-                    .content("testContent")
-                    .answer(answer)
-                    .tags(Set.of("testTag1", "testTag2")).build();
-
-            Assertions.assertThrows(EmptyAnswerException.class, () -> questionCreator.createQuestion(command));
-        }
-
-
-        @Test
-        void emptyTags() {
-            final var command = CreateQuestionCommand.builder()
-                    .title("testTitle")
-                    .content("testContent")
-                    .answer("testAnswer")
-                    .tags(Set.of()).build();
-
-            Assertions.assertThrows(InvalidTagsException.class, () -> questionCreator.createQuestion(command));
-        }
-
-        @Test
-        void nullTags() {
-            final var command = CreateQuestionCommand.builder()
-                    .title("testTitle")
-                    .content("testContent")
-                    .answer("testAnswer")
-                    .tags(null).build();
-
-            Assertions.assertThrows(InvalidTagsException.class, () -> questionCreator.createQuestion(command));
-        }
-
-        @Test
-        void tooManyTags() {
-            final var command = CreateQuestionCommand.builder()
-                    .title("testTitle")
-                    .content("testContent")
-                    .answer("testAnswer")
-                    .tags(Set.of("testTag1", "testTag2", "testTag3", "testTag4", "testTag5", "testTag6")).build();
-
-            Assertions.assertThrows(InvalidTagsException.class, () -> questionCreator.createQuestion(command));
-        }
+    @BeforeEach
+    void clearDatabase() {
+        databasePreparer.clear();
     }
 
+    @Test
+    void createQuestion() throws Exception {
+        final var command = CreateQuestionRequest.builder()
+                .content("testContent")
+                .answer("testAnswer")
+                .tags(Set.of("testTag1", "testTag2")).build();
+
+        final var result = mockMvc.perform(requestFactory.createQuestion(command))
+                .andDo(print())
+                .andExpect(status().isOk())
+                .andReturn();
+
+        ResponseParser.getStringValue(result, "id")
+                .ifPresentOrElse(id -> questionRepository.findById(id)
+                                .ifPresentOrElse(doAssertions(command), () -> Assertions.fail("Question was not found in database")),
+                        () -> Assertions.fail("ID parameter was not found in response body"));
+    }
+
+    private Consumer<Question> doAssertions(final CreateQuestionRequest command) {
+        return question -> {
+            Assertions.assertEquals(command.getAnswer(), question.getAnswer());
+            Assertions.assertEquals(command.getContent(), question.getContent());
+            Assertions.assertEquals(command.getTags(), question.getTags());
+        };
+    }
 }

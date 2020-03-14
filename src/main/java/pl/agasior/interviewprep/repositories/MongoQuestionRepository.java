@@ -8,7 +8,7 @@ import java.util.List;
 import java.util.Optional;
 
 @Repository
-class MongoQuestionRepository implements QuestionRepository {
+public class MongoQuestionRepository implements QuestionRepository {
     private final MongoTemplate mongoTemplate;
 
     MongoQuestionRepository(final MongoTemplate mongoTemplate) {
@@ -21,17 +21,12 @@ class MongoQuestionRepository implements QuestionRepository {
     }
 
     @Override
-    public Question update(final Question question) {
-        return null;
-    }
-
-    @Override
     public List<Question> findAll() {
         return mongoTemplate.findAll(Question.class);
     }
 
     @Override
     public Optional<Question> findById(String id) {
-        return Optional.empty();
+        return Optional.ofNullable(mongoTemplate.findOne(QueryFactory.idQuery(id), Question.class));
     }
 }

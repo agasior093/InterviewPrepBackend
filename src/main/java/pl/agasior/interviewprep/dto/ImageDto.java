@@ -5,6 +5,6 @@ import lombok.Getter;
 
 @Getter
 @AllArgsConstructor
-public class CreateQuestionResult {
-    private final String questionId;
+public class ImageDto {
+    private final String imageUrl;
 }

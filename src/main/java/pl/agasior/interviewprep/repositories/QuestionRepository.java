@@ -1,12 +1,29 @@
 package pl.agasior.interviewprep.repositories;
 
+import org.springframework.data.mongodb.core.MongoTemplate;
+import org.springframework.stereotype.Repository;
 import pl.agasior.interviewprep.entities.Question;
 
 import java.util.List;
 import java.util.Optional;
 
-public interface QuestionRepository {
-    Question save(Question question);
-    List<Question> findAll();
-    Optional<Question> findById(String id);
+@Repository
+public class QuestionRepository  {
+    private final MongoTemplate mongoTemplate;
+
+    QuestionRepository(final MongoTemplate mongoTemplate) {
+        this.mongoTemplate = mongoTemplate;
+    }
+
+    public Question save(final Question question) {
+        return mongoTemplate.save(question);
+    }
+
+    public List<Question> findAll() {
+        return mongoTemplate.findAll(Question.class);
+    }
+
+    public Optional<Question> findById(String id) {
+        return Optional.ofNullable(mongoTemplate.findOne(QueryFactory.idQuery(id), Question.class));
+    }
 }

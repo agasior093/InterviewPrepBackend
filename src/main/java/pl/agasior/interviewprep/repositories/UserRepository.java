@@ -1,34 +1,29 @@
 package pl.agasior.interviewprep.repositories;
 
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
-import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.stereotype.Repository;
-import pl.agasior.interviewprep.entities.Role;
 import pl.agasior.interviewprep.entities.User;
 
-import java.util.HashMap;
-import java.util.Map;
 import java.util.Optional;
-import java.util.Set;
 
 @Repository
 public class UserRepository {
-    private final Map<String, User> users = new HashMap<>();
+    private final MongoTemplate mongoTemplate;
 
-    UserRepository() {
-        this.users.put("1",
-                User.builder()
-                        .id("1")
-                        .username("admin")
-                        .email("admin@admin.com")
-                        .password(new BCryptPasswordEncoder().encode("admin"))
-                        .isActive(true)
-                        .roles(Set.of(Role.Admin))
-                        .build());
+    UserRepository(final MongoTemplate mongoTemplate) {
+        this.mongoTemplate = mongoTemplate;
+    }
+
+    public User save(User user) {
+        return mongoTemplate.save(user);
     }
 
     public Optional<User> findByUsername(String username) {
-        return users.values().stream().filter(user -> username.equals(user.getUsername())).findFirst();
+        return Optional.ofNullable(mongoTemplate.findOne(QueryFactory.usernameQuery(username), User.class));
+    }
+
+    public Optional<User> findByEmail(String email) {
+        return Optional.ofNullable(mongoTemplate.findOne(QueryFactory.emailQuery(email), User.class));
     }
 }
 

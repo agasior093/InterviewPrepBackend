@@ -47,6 +47,10 @@ public class UserCreatorTest {
     UserCreatorTest(WebApplicationContext webApplicationContext) {
         this.mockMvc = MockMvcBuilders.webAppContextSetup(webApplicationContext).build();
     }
+    
+    private static final String TEST_USERNAME = "testUser";
+    private static final String TEST_EMAIL = "test@mail.com";
+    private static final String TEST_PASSWORD = "pass";
 
     @BeforeEach
     @AfterAll
@@ -57,10 +61,10 @@ public class UserCreatorTest {
     @Test
     void createNewUser() throws Exception {
         final var request = SignUpRequest.builder()
-                .username("testUser")
-                .email("test@test.pl")
-                .password("pass")
-                .passwordConfirmation("pass")
+                .username(TEST_USERNAME)
+                .email(TEST_EMAIL)
+                .password(TEST_PASSWORD)
+                .passwordConfirmation(TEST_PASSWORD)
                 .build();
 
         mockMvc.perform(requestFactory.signUp(request))
@@ -81,13 +85,13 @@ public class UserCreatorTest {
 
         @Test
         void usernameAlreadyExists() throws Exception {
-            final var username = "testUser";
+            final var username = TEST_USERNAME;
             userRepository.save(User.builder().username(username).build());
             final var request = SignUpRequest.builder()
                     .username(username)
-                    .email("test@test.pl")
-                    .password("pass")
-                    .passwordConfirmation("pass")
+                    .email(TEST_EMAIL)
+                    .password(TEST_PASSWORD)
+                    .passwordConfirmation(TEST_PASSWORD)
                     .build();
 
             final var mvcResult = mockMvc.perform(requestFactory.signUp(request))
@@ -100,13 +104,13 @@ public class UserCreatorTest {
 
         @Test
         void emailAlreadyExists() throws Exception {
-            final var email = "test@mail.com";
+            final var email = TEST_EMAIL;
             userRepository.save(User.builder().email(email).build());
             final var request = SignUpRequest.builder()
-                    .username("testUser")
+                    .username(TEST_USERNAME)
                     .email(email)
-                    .password("pass")
-                    .passwordConfirmation("pass")
+                    .password(TEST_PASSWORD)
+                    .passwordConfirmation(TEST_PASSWORD)
                     .build();
 
             final var mvcResult = mockMvc.perform(requestFactory.signUp(request))
@@ -119,12 +123,11 @@ public class UserCreatorTest {
 
         @Test
         void passwordsDoesNotMatch() throws Exception {
-            final var password = "password";
             final var request = SignUpRequest.builder()
-                    .username("testUser")
-                    .email("test@mail.com")
-                    .password(password)
-                    .passwordConfirmation(password.toUpperCase())
+                    .username(TEST_USERNAME)
+                    .email(TEST_EMAIL)
+                    .password(TEST_PASSWORD)
+                    .passwordConfirmation(TEST_PASSWORD.toUpperCase())
                     .build();
 
             final var mvcResult = mockMvc.perform(requestFactory.signUp(request))
@@ -141,9 +144,9 @@ public class UserCreatorTest {
         void nullOrEmptyUsername(String username) throws Exception {
             final var request = SignUpRequest.builder()
                     .username(username)
-                    .email("test@test.pl")
-                    .password("pass")
-                    .passwordConfirmation("pass")
+                    .email(TEST_EMAIL)
+                    .password(TEST_PASSWORD)
+                    .passwordConfirmation(TEST_PASSWORD)
                     .build();
 
             mockMvc.perform(requestFactory.signUp(request))
@@ -156,10 +159,10 @@ public class UserCreatorTest {
         @ValueSource(strings = {"  ", "\t", "\n"})
         void nullOrEmptyEmail(String email) throws Exception {
             final var request = SignUpRequest.builder()
-                    .username("testUser")
+                    .username(TEST_USERNAME)
                     .email(email)
-                    .password("pass")
-                    .passwordConfirmation("pass")
+                    .password(TEST_PASSWORD)
+                    .passwordConfirmation(TEST_PASSWORD)
                     .build();
 
             mockMvc.perform(requestFactory.signUp(request))
@@ -172,10 +175,10 @@ public class UserCreatorTest {
         @ValueSource(strings = {"  ", "\t", "\n"})
         void nullOrEmptyPassword(String password) throws Exception {
             final var request = SignUpRequest.builder()
-                    .username("testUser")
-                    .email("test@mail.pl")
+                    .username(TEST_USERNAME)
+                    .email(TEST_EMAIL)
                     .password(password)
-                    .passwordConfirmation("pass")
+                    .passwordConfirmation(TEST_PASSWORD)
                     .build();
 
             mockMvc.perform(requestFactory.signUp(request))
@@ -188,9 +191,9 @@ public class UserCreatorTest {
         @ValueSource(strings = {"  ", "\t", "\n"})
         void nullOrEmptyPasswordConfirmation(String password) throws Exception {
             final var request = SignUpRequest.builder()
-                    .username("testUser")
-                    .email("test@mail.pl")
-                    .password("pass")
+                    .username(TEST_USERNAME)
+                    .email(TEST_EMAIL)
+                    .password(TEST_PASSWORD)
                     .passwordConfirmation(password)
                     .build();
 
@@ -203,10 +206,10 @@ public class UserCreatorTest {
         @ValueSource(strings = {"mailmail.com", "@mail.com", "@mail@mail.com"})
         void invalidEmail(String email) throws Exception {
             final var request = SignUpRequest.builder()
-                    .username("testUser")
+                    .username(TEST_USERNAME)
                     .email(email)
-                    .password("pass")
-                    .passwordConfirmation("pass")
+                    .password(TEST_PASSWORD)
+                    .passwordConfirmation(TEST_PASSWORD)
                     .build();
 
             mockMvc.perform(requestFactory.signUp(request))

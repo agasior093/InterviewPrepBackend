@@ -1,4 +1,4 @@
-package pl.agasior.interviewprep.controllers;
+package pl.agasior.interviewprep.interceptors;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;

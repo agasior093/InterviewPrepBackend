@@ -10,3 +10,6 @@ cloudinary:
   cloudName: dmswg6dq2
   apiKey: 831934641529161
   apiSecret: 5l7HTn6c0SIhXypMxICm_OolnJc
+security:
+  jwt:
+    expirationTime: 864000000

@@ -11,7 +11,7 @@ import java.io.IOException;
 
 @Component
 @Order(Ordered.HIGHEST_PRECEDENCE)
-class CorsFilter implements Filter {
+class CorsFilterImpl implements Filter {
 
     private String allowedOrigin = "http://localhost:4200";
 

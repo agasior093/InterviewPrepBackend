@@ -6,7 +6,9 @@ import org.springframework.stereotype.Component;
 import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilder;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import pl.agasior.interviewprep.dto.CreateQuestionRequest;
+import pl.agasior.interviewprep.dto.SignUpRequest;
 import pl.agasior.interviewprep.dto.UpdateQuestionRequest;
+import springfox.documentation.spring.web.json.Json;
 
 import java.nio.charset.StandardCharsets;
 
@@ -14,6 +16,10 @@ import java.nio.charset.StandardCharsets;
 public class RequestFactory {
     private static final String QUESTION_ENDPOINT = "/question";
     private static final String TAG_ENDPOINT = "/tag";
+    private static final String SIGN_UP_ENDPOINT = "/auth/signUp";
+
+    private static final String CONTENT_TYPE = "Content-Type";
+    private static final String APPLICATION_JSON = "application/json";
 
     private final ObjectMapper mapper;
 
@@ -29,6 +35,10 @@ public class RequestFactory {
         return patchRequest(QUESTION_ENDPOINT, mapper.writeValueAsString(request));
     }
 
+    public MockHttpServletRequestBuilder signUp(SignUpRequest request) throws JsonProcessingException {
+        return postRequest(SIGN_UP_ENDPOINT, mapper.writeValueAsString(request));
+    }
+
     public MockHttpServletRequestBuilder getTags() {
         return getRequest(TAG_ENDPOINT);
     }
@@ -36,20 +46,20 @@ public class RequestFactory {
     private MockHttpServletRequestBuilder postRequest(String url, String body) {
         return MockMvcRequestBuilders.post(url)
                 .content(body)
-                .header("Content-Type", "application/json")
+                .header(CONTENT_TYPE, APPLICATION_JSON)
                 .characterEncoding(StandardCharsets.UTF_8.name());
     }
 
     private MockHttpServletRequestBuilder patchRequest(String url, String body) {
         return MockMvcRequestBuilders.patch(url)
                 .content(body)
-                .header("Content-Type", "application/json")
+                .header(CONTENT_TYPE, APPLICATION_JSON)
                 .characterEncoding(StandardCharsets.UTF_8.name());
     }
 
     private MockHttpServletRequestBuilder getRequest(String url) {
         return MockMvcRequestBuilders.get(url)
-                .header("Content-Type", "application/json")
+                .header(CONTENT_TYPE, APPLICATION_JSON)
                 .characterEncoding(StandardCharsets.UTF_8.name());
     }
 }

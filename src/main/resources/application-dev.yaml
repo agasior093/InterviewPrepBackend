@@ -1,3 +1,5 @@
+server:
+  hostname: http://localhost:8080
 mongodb:
   database: interview_dev
   url: mongodb+srv://admin:78jGbjNvyE7SQvXF@adv-sdlxm.mongodb.net/{db}?retryWrites=true&w=majority

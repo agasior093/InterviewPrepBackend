@@ -1,3 +1,5 @@
+server:
+  hostname: https://interview-prep-app.herokuapp.com/
 mongodb:
   database: code_interview_prod
   url: ${MONGO_URL}

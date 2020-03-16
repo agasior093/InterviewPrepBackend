@@ -8,6 +8,7 @@ import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import pl.agasior.interviewprep.dto.CreateQuestionRequest;
 import pl.agasior.interviewprep.dto.SignUpRequest;
 import pl.agasior.interviewprep.dto.UpdateQuestionRequest;
+import pl.agasior.interviewprep.dto.UpdateQuestionStatusRequest;
 import springfox.documentation.spring.web.json.Json;
 
 import java.nio.charset.StandardCharsets;
@@ -15,6 +16,7 @@ import java.nio.charset.StandardCharsets;
 @Component
 public class RequestFactory {
     private static final String QUESTION_ENDPOINT = "/question";
+    private static final String UPDATE_QUESTION_STATUS_ENDPOINT = QUESTION_ENDPOINT + "/status";
     private static final String TAG_ENDPOINT = "/tag";
     private static final String SIGN_UP_ENDPOINT = "/auth/signUp";
 
@@ -33,6 +35,10 @@ public class RequestFactory {
 
     public MockHttpServletRequestBuilder updateQuestion(UpdateQuestionRequest request) throws JsonProcessingException {
         return patchRequest(QUESTION_ENDPOINT, mapper.writeValueAsString(request));
+    }
+
+    public MockHttpServletRequestBuilder updateQuestionStatus(UpdateQuestionStatusRequest request) throws JsonProcessingException {
+        return patchRequest(UPDATE_QUESTION_STATUS_ENDPOINT, mapper.writeValueAsString(request));
     }
 
     public MockHttpServletRequestBuilder signUp(SignUpRequest request) throws JsonProcessingException {

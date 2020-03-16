@@ -3,8 +3,11 @@ package pl.agasior.interviewprep.testutils;
 import com.mongodb.MongoClient;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
+import pl.agasior.interviewprep.entities.Role;
+import pl.agasior.interviewprep.entities.User;
 
 import javax.annotation.PostConstruct;
+import java.util.Set;
 
 @Service
 public class DatabasePreparer {
@@ -23,7 +26,7 @@ public class DatabasePreparer {
     }
 
     public void clear() {
-        var database = mongoClient.getDatabase(databaseName);
+        final var database = mongoClient.getDatabase(databaseName);
         for (String collectionName : database.listCollectionNames()) {
             database.getCollection(collectionName).drop();
         }

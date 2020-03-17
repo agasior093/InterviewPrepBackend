@@ -30,6 +30,7 @@ public class UserReader implements AuthenticationFacade {
                 .username(user.getUsername())
                 .email(user.getEmail())
                 .roles(user.getRoles())
+                .imageUrl(user.getImageUrl())
                 .build();
     }
 }

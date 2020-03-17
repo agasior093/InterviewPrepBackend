@@ -3,6 +3,7 @@ package pl.agasior.interviewprep.controllers;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import pl.agasior.interviewprep.dto.CreateQuestionRequest;
+import pl.agasior.interviewprep.dto.GetQuestionsByTagsRequest;
 import pl.agasior.interviewprep.dto.UpdateQuestionRequest;
 import pl.agasior.interviewprep.dto.UpdateQuestionStatusRequest;
 import pl.agasior.interviewprep.entities.Question;
@@ -46,5 +47,10 @@ class QuestionController {
     @PatchMapping("/status")
     ResponseEntity<Question> updateQuestionStatus(@RequestBody @Valid UpdateQuestionStatusRequest request) {
         return ResponseEntity.ok(questionUpdater.updateQuestion(request));
+    }
+
+    @GetMapping("/getQuestionsByTags")
+    ResponseEntity<List<Question>> getQuestionsByTags(@RequestBody @Valid GetQuestionsByTagsRequest request) {
+        return ResponseEntity.ok(questionReader.getQuestionsByTags(request));
     }
 }

@@ -1,6 +1,7 @@
 package pl.agasior.interviewprep.services.question;
 
 import org.springframework.stereotype.Service;
+import pl.agasior.interviewprep.dto.GetQuestionsByTagsRequest;
 import pl.agasior.interviewprep.entities.Question;
 import pl.agasior.interviewprep.repositories.QuestionRepository;
 
@@ -17,5 +18,9 @@ public class QuestionReader {
 
     public List<Question> getAllQuestions() {
         return questionRepository.findAll();
+    }
+
+    public List<Question> getQuestionsByTags(GetQuestionsByTagsRequest request) {
+        return questionRepository.findByTags(request);
     }
 }

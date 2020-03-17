@@ -3,6 +3,7 @@ package pl.agasior.interviewprep.configuration.security;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.BeanIds;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
@@ -15,6 +16,7 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import pl.agasior.interviewprep.configuration.security.jwt.TokenAuthenticationFilter;
+import pl.agasior.interviewprep.entities.Role;
 import pl.agasior.interviewprep.interceptors.RestAuthenticationInterceptor;
 
 @Configuration
@@ -46,8 +48,12 @@ class SecurityConfiguration extends WebSecurityConfigurerAdapter {
                 .and()
                 .authorizeRequests()
                 .antMatchers(
-                        "/auth/**"
+                        "/auth/**",
+                        "/tag/**"
                 ).permitAll()
+                .antMatchers(HttpMethod.GET, "/question/**")
+                .permitAll()
+                .antMatchers("/question/status").hasRole(Role.Admin.toString())
                 .and()
                 .authorizeRequests()
                 .anyRequest()

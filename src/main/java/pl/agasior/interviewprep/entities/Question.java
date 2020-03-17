@@ -19,4 +19,5 @@ public class Question {
     private final LocalDateTime creationDate;
     private final String userId;
     private final Set<String> tags;
+    private final Status status;
 }

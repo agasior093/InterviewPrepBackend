@@ -13,8 +13,13 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.WebApplicationContext;
 import pl.agasior.interviewprep.dto.CreateQuestionRequest;
+import pl.agasior.interviewprep.dto.UserDto;
+import pl.agasior.interviewprep.entities.Role;
+import pl.agasior.interviewprep.entities.Status;
+import pl.agasior.interviewprep.entities.User;
 import pl.agasior.interviewprep.repositories.QuestionRepository;
 import pl.agasior.interviewprep.testutils.DatabasePreparer;
+import pl.agasior.interviewprep.testutils.FakeUserReader;
 import pl.agasior.interviewprep.testutils.RequestFactory;
 import pl.agasior.interviewprep.testutils.ResponseParser;
 
@@ -28,7 +33,6 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @ActiveProfiles("test")
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 public class QuestionCreatorTest {
-
     @Autowired
     private RequestFactory requestFactory;
 
@@ -37,6 +41,9 @@ public class QuestionCreatorTest {
 
     @Autowired
     private QuestionRepository questionRepository;
+
+    @Autowired
+    private FakeUserReader fakeUserReader;
 
     private final MockMvc mockMvc;
 
@@ -54,7 +61,9 @@ public class QuestionCreatorTest {
     class CreateQuestion {
 
         @Test
-        void withValidParameters() throws Exception {
+        void withStatusPendingIfCreatedByUser() throws Exception {
+            final var user = UserDto.builder().username("user").roles(Set.of(Role.User)).build();
+            fakeUserReader.provideUser(user);
             final var command = CreateQuestionRequest.builder()
                     .content("testContent")
                     .answer("testAnswer")
@@ -71,6 +80,34 @@ public class QuestionCreatorTest {
                                         Assertions.assertEquals(command.getAnswer(), question.getAnswer());
                                         Assertions.assertEquals(command.getContent(), question.getContent());
                                         Assertions.assertEquals(command.getTags(), question.getTags());
+                                        Assertions.assertEquals(Status.Pending, question.getStatus());
+                                        Assertions.assertEquals(user.getUsername(), question.getUserId());
+                                    }, () -> Assertions.fail("Question was not found in database")),
+                            () -> Assertions.fail("ID parameter was not found in response body"));
+        }
+
+        @Test
+        void withStatusApprovedIfCreatedByAdmin() throws Exception {
+            final var user = UserDto.builder().username("admin").roles(Set.of(Role.Admin, Role.User)).build();
+            fakeUserReader.provideUser(user);
+            final var command = CreateQuestionRequest.builder()
+                    .content("testContent")
+                    .answer("testAnswer")
+                    .tags(Set.of("testTag1", "testTag2")).build();
+
+            final var result = mockMvc.perform(requestFactory.createQuestion(command))
+                    .andDo(print())
+                    .andExpect(status().isOk())
+                    .andReturn();
+
+            ResponseParser.getStringValue(result, "id")
+                    .ifPresentOrElse(id -> questionRepository.findById(id)
+                                    .ifPresentOrElse(question -> {
+                                        Assertions.assertEquals(command.getAnswer(), question.getAnswer());
+                                        Assertions.assertEquals(command.getContent(), question.getContent());
+                                        Assertions.assertEquals(command.getTags(), question.getTags());
+                                        Assertions.assertEquals(Status.Approved, question.getStatus());
+                                        Assertions.assertEquals(user.getUsername(), question.getUserId());
                                     }, () -> Assertions.fail("Question was not found in database")),
                             () -> Assertions.fail("ID parameter was not found in response body"));
         }

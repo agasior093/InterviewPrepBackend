@@ -3,17 +3,21 @@ package pl.agasior.interviewprep.services.question;
 import org.junit.jupiter.api.*;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.EnumSource;
 import org.junit.jupiter.params.provider.NullAndEmptySource;
 import org.junit.jupiter.params.provider.ValueSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.data.repository.query.Param;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.WebApplicationContext;
 import pl.agasior.interviewprep.dto.UpdateQuestionRequest;
+import pl.agasior.interviewprep.dto.UpdateQuestionStatusRequest;
 import pl.agasior.interviewprep.entities.Question;
+import pl.agasior.interviewprep.entities.Status;
 import pl.agasior.interviewprep.repositories.QuestionRepository;
 import pl.agasior.interviewprep.testutils.DatabasePreparer;
 import pl.agasior.interviewprep.testutils.RequestFactory;
@@ -58,6 +62,7 @@ public class QuestionUpdaterTest {
                 .tags(Set.of("testTagA", "testTagB"))
                 .userId("testUser")
                 .creationDate(LocalDateTime.now())
+                .status(Status.Pending)
                 .build();
     }
 
@@ -101,7 +106,6 @@ public class QuestionUpdaterTest {
                 Assertions.assertEquals(question.getContent(), command.getContent());
                 Assertions.assertEquals(question.getTags(), sampleQuestion().getTags());
                 Assertions.assertEquals(question.getUserId(), sampleQuestion().getUserId());
-//                Assertions.assertEquals(question.getCreationDate(), sampleQuestion().getCreationDate()); TODO
             }, () -> Assertions.fail("Question not found"));
         }
 
@@ -122,7 +126,28 @@ public class QuestionUpdaterTest {
                 Assertions.assertEquals(question.getContent(), sampleQuestion().getContent());
                 Assertions.assertEquals(question.getTags(), command.getTags());
                 Assertions.assertEquals(question.getUserId(), sampleQuestion().getUserId());
-//                Assertions.assertEquals(question.getCreationDate(), sampleQuestion().getCreationDate()); TODO
+            }, () -> Assertions.fail("Question not found"));
+        }
+
+        @ParameterizedTest
+        @EnumSource(Status.class)
+        void modifyStatus(Status status) throws Exception {
+            final var id = questionRepository.save(sampleQuestion()).getId();
+            final var request = UpdateQuestionStatusRequest.builder()
+                    .id(id)
+                    .status(status)
+                    .build();
+
+            mockMvc.perform(requestFactory.updateQuestionStatus(request))
+                    .andDo(print())
+                    .andExpect(status().isOk());
+
+            questionRepository.findById(id).ifPresentOrElse(question -> {
+                Assertions.assertEquals(question.getAnswer(), sampleQuestion().getAnswer());
+                Assertions.assertEquals(question.getContent(), sampleQuestion().getContent());
+                Assertions.assertEquals(question.getTags(), sampleQuestion().getTags());
+                Assertions.assertEquals(question.getUserId(), sampleQuestion().getUserId());
+                Assertions.assertEquals(question.getStatus(), status);
             }, () -> Assertions.fail("Question not found"));
         }
     }
@@ -133,7 +158,7 @@ public class QuestionUpdaterTest {
         @ParameterizedTest
         @NullAndEmptySource
         @ValueSource(strings = {"  ", "\t", "\n"})
-        void nullOrEmptyId(String id) throws Exception {
+        void nullOrEmptyIdOnQuestionUpdate(String id) throws Exception {
             final var command = UpdateQuestionRequest.builder()
                     .id(id)
                     .build();
@@ -144,7 +169,7 @@ public class QuestionUpdaterTest {
         }
 
         @Test
-        void idNotFound() throws Exception {
+        void idNotFoundOnQuestionUpdate() throws Exception {
             final var id = "randomId";
             final var command = UpdateQuestionRequest.builder()
                     .id(id)
@@ -180,88 +205,45 @@ public class QuestionUpdaterTest {
                     .andDo(print())
                     .andExpect(status().isBadRequest());
         }
+
+        @ParameterizedTest
+        @NullAndEmptySource
+        @ValueSource(strings = {"  ", "\t", "\n"})
+        void nullOrEmptyIdOnStatusUpdate(String id) throws Exception {
+            final var command = UpdateQuestionStatusRequest.builder()
+                    .id(id)
+                    .build();
+
+            mockMvc.perform(requestFactory.updateQuestionStatus(command))
+                    .andDo(print())
+                    .andExpect(status().isBadRequest());
+        }
+
+        @Test
+        void idNotFoundOnStatusUpdate() throws Exception {
+            final var id = "randomId";
+            final var command = UpdateQuestionStatusRequest.builder()
+                    .id(id)
+                    .status(Status.Approved)
+                    .build();
+
+            final var mvcResult = mockMvc.perform(requestFactory.updateQuestionStatus(command))
+                    .andDo(print())
+                    .andExpect(status().isNotFound())
+                    .andReturn();
+            Assertions.assertEquals("Question with id " + id + " does not exists", mvcResult.getResponse().getContentAsString());
+        }
+
+        @Test
+        void nullStatus() throws Exception {
+            final var command = UpdateQuestionStatusRequest.builder()
+                    .id("randomId")
+                    .build();
+
+            final var mvcResult = mockMvc.perform(requestFactory.updateQuestionStatus(command))
+                    .andDo(print())
+                    .andExpect(status().isBadRequest());
+        }
     }
 
 }
-
-
-//    @Test
-//    void modifyContent() {
-//        final var question = saveTestQuestion();
-//        final var updateCommand = UpdateQuestionRequest.builder()
-//                .id(question.getId())
-//                .content("modifiedContent")
-//                .build();
-//
-//        final var result = questionUpdater.updateQuestion(updateCommand);
-//
-//        repository.findById(result.getId()).ifPresentOrElse(updatedQuestion -> {
-//            Assertions.assertEquals(updateCommand.getContent(), updatedQuestion.getContent());
-//            Assertions.assertEquals(question.getAnswer(), updatedQuestion.getAnswer());
-//            Assertions.assertEquals(question.getTags(), updatedQuestion.getTags());
-//            Assertions.assertEquals(question.getUserId(), updatedQuestion.getUserId());
-//            Assertions.assertEquals(question.getCreationDate(), updatedQuestion.getCreationDate());
-//        }, Assertions::fail);
-//    }
-//
-//    @Test
-//    void modifyAnswer() {
-//        final var question = saveTestQuestion();
-//        final var updateCommand = UpdateQuestionRequest.builder()
-//                .id(question.getId())
-//                .answer("modifiedAnswer")
-//                .build();
-//
-//        final var result = questionUpdater.updateQuestion(updateCommand);
-//
-//        repository.findById(result.getId()).ifPresentOrElse(updatedQuestion -> {
-//            Assertions.assertEquals(updateCommand.getAnswer(), updatedQuestion.getAnswer());
-//            Assertions.assertEquals(question.getContent(), updatedQuestion.getContent());
-//            Assertions.assertEquals(question.getTags(), updatedQuestion.getTags());
-//            Assertions.assertEquals(question.getUserId(), updatedQuestion.getUserId());
-//            Assertions.assertEquals(question.getCreationDate(), updatedQuestion.getCreationDate());
-//        }, Assertions::fail);
-//    }
-//
-//    @Test
-//    void modifyTags() {
-//        final var question = saveTestQuestion();
-//        final var updateCommand = UpdateQuestionRequest.builder()
-//                .id(question.getId())
-//                .tags(Set.of("modifiedTag"))
-//                .build();
-//
-//        final var result = questionUpdater.updateQuestion(updateCommand);
-//
-//        repository.findById(result.getId()).ifPresentOrElse(updatedQuestion -> {
-//            Assertions.assertEquals(updateCommand.getTags(), updatedQuestion.getTags());
-//            Assertions.assertEquals(question.getContent(), updatedQuestion.getContent());
-//            Assertions.assertEquals(question.getAnswer(), updatedQuestion.getAnswer());
-//            Assertions.assertEquals(question.getUserId(), updatedQuestion.getUserId());
-//            Assertions.assertEquals(question.getCreationDate(), updatedQuestion.getCreationDate());
-//        }, Assertions::fail);
-//    }
-//
-//
-//    @Test
-//    void throwOnUpdatingNotExistingQuestion() {
-//        final var updateCommand = UpdateQuestionRequest.builder()
-//                .id("notExistingTag")
-//                .content("modifiedContent")
-//                .answer("modifiedAnswer")
-//                .tags(Set.of("modifiedTag"))
-//                .build();
-//
-//        Assertions.assertThrows(QuestionNotFoundException.class, () -> questionUpdater.updateQuestion(updateCommand));
-//    }
-//
-//
-//    private Question saveTestQuestion() {
-//        return repository.save(Question.builder()
-//                .content("testContent")
-//                .answer("testAnswer")
-//                .tags(Set.of("testTag"))
-//                .userId("testUser")
-//                .creationDate(LocalDateTime.now())
-//                .build());
-//    }

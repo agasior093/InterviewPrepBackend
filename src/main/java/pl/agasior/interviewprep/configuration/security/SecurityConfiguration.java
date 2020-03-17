@@ -3,7 +3,6 @@ package pl.agasior.interviewprep.configuration.security;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.BeanIds;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
@@ -14,10 +13,13 @@ import org.springframework.security.config.annotation.web.configuration.WebSecur
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.oauth2.client.userinfo.DefaultOAuth2UserService;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import pl.agasior.interviewprep.configuration.security.jwt.TokenAuthenticationFilter;
-import pl.agasior.interviewprep.entities.Role;
+import pl.agasior.interviewprep.configuration.security.oauth2.OAuth2AuthenticationFailureHandler;
+import pl.agasior.interviewprep.configuration.security.oauth2.OAuth2AuthenticationSuccessHandler;
 import pl.agasior.interviewprep.interceptors.RestAuthenticationInterceptor;
+import pl.agasior.interviewprep.repositories.CookieRequestRepository;
 
 @Configuration
 @EnableWebSecurity
@@ -30,7 +32,11 @@ import pl.agasior.interviewprep.interceptors.RestAuthenticationInterceptor;
 class SecurityConfiguration extends WebSecurityConfigurerAdapter {
     private final TokenAuthenticationFilter tokenAuthenticationFilter;
     private final UserDetailsService userDetailsService;
+    private final DefaultOAuth2UserService oAuth2UserService;
     private final PasswordEncoder encoder;
+    private final OAuth2AuthenticationSuccessHandler successHandler;
+    private final OAuth2AuthenticationFailureHandler failureHandler;
+    private final CookieRequestRepository cookieRequestRepository;
 
     @Override
     protected void configure(HttpSecurity http) throws Exception {
@@ -47,17 +53,28 @@ class SecurityConfiguration extends WebSecurityConfigurerAdapter {
                 .authenticationEntryPoint(new RestAuthenticationInterceptor())
                 .and()
                 .authorizeRequests()
-                .antMatchers(
-                        "/auth/**",
-                        "/tag/**"
-                ).permitAll()
-                .antMatchers(HttpMethod.GET, "/question/**")
-                .permitAll()
-                .antMatchers("/question/status").hasRole(Role.Admin.toString())
-                .and()
-                .authorizeRequests()
+//                .antMatchers(
+//                        "/auth/**",
+//                        "/tag/**"
+//                ).permitAll()
+//                .antMatchers(HttpMethod.GET, "/question/**")
+//                .permitAll()
+//                .antMatchers("/question/status").hasRole(Role.Admin.toString())
+//                .and()
+//                .authorizeRequests()
                 .anyRequest()
-                .authenticated();
+                .authenticated()
+                .and()
+                .oauth2Login()
+                .authorizationEndpoint().baseUri("/oauth2/authorize")
+                .authorizationRequestRepository(cookieRequestRepository)
+                .and()
+                .redirectionEndpoint().baseUri("/oauth2/callback/*")
+                .and()
+                .userInfoEndpoint().userService(oAuth2UserService)
+                .and()
+                .successHandler(successHandler)
+                .failureHandler(failureHandler);
     }
 
     @Override

@@ -1,6 +1,7 @@
 package pl.agasior.interviewprep.services.user;
 
 import org.springframework.stereotype.Service;
+import pl.agasior.interviewprep.configuration.security.oauth2.OAuth2UserInfo;
 import pl.agasior.interviewprep.dto.SignUpRequest;
 import pl.agasior.interviewprep.dto.exceptions.EmailAlreadyExistsException;
 import pl.agasior.interviewprep.dto.exceptions.PasswordDoesNotMatchException;
@@ -22,6 +23,13 @@ class UserValidator {
         if (userRepository.findByUsername(request.getUsername()).isPresent())
             throw new UserNameAlreadyExistsException();
         if (userRepository.findByEmail(request.getEmail()).isPresent())
+            throw new EmailAlreadyExistsException();
+    }
+
+    void validate(OAuth2UserInfo oAuth2UserInfo) throws RuntimeException {
+        if (userRepository.findByUsername(oAuth2UserInfo.getEmail()).isPresent())
+            throw new UserNameAlreadyExistsException();
+        if (userRepository.findByEmail(oAuth2UserInfo.getEmail()).isPresent())
             throw new EmailAlreadyExistsException();
     }
 }

@@ -3,11 +3,6 @@ server:
 mongodb:
   database: test_db
   url: mongodb+srv://admin:78jGbjNvyE7SQvXF@adv-sdlxm.mongodb.net/{db}?retryWrites=true&w=majority
-spring:
-  servlet:
-    multipart:
-      enabled: true
-      max-file-size: 1MB
 cloudinary:
   cloudName: dmswg6dq2
   apiKey: 831934641529161
@@ -15,3 +10,7 @@ cloudinary:
 security:
   jwt:
     expirationTime: 864000000
+  oauth2:
+    authorizedRedirectUrl: http://localhost:4200/facebook
+  cors:
+    allowedOrigin: http://localhost:4200

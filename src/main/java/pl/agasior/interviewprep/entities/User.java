@@ -20,4 +20,6 @@ public class User {
     private final String password;
     private final Set<Role> roles;
     private final Boolean isActive;
+    private final AuthProvider provider;
+    private final String imageUrl;
 }

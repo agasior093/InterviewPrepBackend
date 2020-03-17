@@ -1,6 +1,7 @@
 package pl.agasior.interviewprep.configuration.security;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Primary;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -12,6 +13,7 @@ import pl.agasior.interviewprep.entities.User;
 import pl.agasior.interviewprep.repositories.UserRepository;
 
 @Service
+@Primary
 class UserDetailsServiceImpl implements UserDetailsService {
     private UserRepository userRepository;
 

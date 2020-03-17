@@ -10,7 +10,7 @@ import pl.agasior.interviewprep.services.user.AuthenticationFacade;
 
 @RestController
 @RequestMapping("/user")
-public class UserController {
+class UserController {
     private final AuthenticationFacade authenticationFacade;
 
     public UserController(AuthenticationFacade authenticationFacade) {

@@ -1,5 +1,7 @@
 package pl.agasior.interviewprep.configuration.security.oauth2;
 
+import pl.agasior.interviewprep.entities.AuthProvider;
+
 import java.util.Map;
 
 public class FacebookOAuth2UserInfo extends OAuth2UserInfo {
@@ -34,5 +36,10 @@ public class FacebookOAuth2UserInfo extends OAuth2UserInfo {
             }
         }
         return null;
+    }
+
+    @Override
+    public AuthProvider getAuthProvider() {
+        return AuthProvider.Facebook;
     }
 }

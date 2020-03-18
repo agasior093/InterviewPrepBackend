@@ -1,5 +1,7 @@
 package pl.agasior.interviewprep.configuration.security.oauth2;
 
+import pl.agasior.interviewprep.entities.AuthProvider;
+
 import java.util.Map;
 
 public abstract class OAuth2UserInfo {
@@ -8,6 +10,8 @@ public abstract class OAuth2UserInfo {
     public OAuth2UserInfo(Map<String, Object> attributes) {
         this.attributes = attributes;
     }
+
+    public abstract AuthProvider getAuthProvider();
 
     public Map<String, Object> getAttributes() {
         return attributes;

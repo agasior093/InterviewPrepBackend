@@ -35,6 +35,6 @@ security:
   jwt:
     expirationTime: 864000000
   oauth2:
-    authorizedRedirectUrl: http://localhost:4200/facebook
+    authorizedRedirectUrl: http://localhost:4200/social
   cors:
     allowedOrigin: http://localhost:4200

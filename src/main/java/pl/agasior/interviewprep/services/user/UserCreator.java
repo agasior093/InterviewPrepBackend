@@ -2,7 +2,6 @@ package pl.agasior.interviewprep.services.user;
 
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
-import pl.agasior.interviewprep.configuration.security.oauth2.FacebookOAuth2UserInfo;
 import pl.agasior.interviewprep.configuration.security.oauth2.OAuth2UserInfo;
 import pl.agasior.interviewprep.dto.SignUpRequest;
 import pl.agasior.interviewprep.entities.AuthProvider;
@@ -59,7 +58,6 @@ public class UserCreator {
     }
 
     private AuthProvider designateAuthProvider(OAuth2UserInfo userInfo) {
-        if(userInfo instanceof FacebookOAuth2UserInfo) return AuthProvider.Facebook;
-        return AuthProvider.Local;
+        return userInfo != null ? userInfo.getAuthProvider() : AuthProvider.Local;
     }
 }

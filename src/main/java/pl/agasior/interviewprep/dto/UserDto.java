@@ -12,4 +12,5 @@ public class UserDto {
     private final String username;
     private final String email;
     private final Set<Role> roles;
+    private final String imageUrl;
 }

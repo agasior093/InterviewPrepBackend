@@ -15,6 +15,13 @@ spring:
             scope:
               - email
               - public_profile
+          github:
+            clientId: cd385ed810a44ab378c7
+            clientSecret: 60403e5ddf2b5411fde6d27875b8b73c94403e03
+            redirectUri: "{baseUrl}/oauth2/callback/{registrationId}"
+            scope:
+              - user:email
+              - read:user
         provider:
           facebook:
             authorizationUri: https://www.facebook.com/v3.0/dialog/oauth
@@ -28,6 +35,6 @@ security:
   jwt:
     expirationTime: 864000000
   oauth2:
-    authorizedRedirectUrl: http://localhost:4200/facebook
+    authorizedRedirectUrl: http://localhost:4200/social
   cors:
     allowedOrigin: http://localhost:4200

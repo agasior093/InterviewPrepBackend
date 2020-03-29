@@ -1,5 +1,6 @@
 package pl.agasior.interviewprep.dto;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.Getter;
 import lombok.Value;
 
@@ -11,6 +12,8 @@ import java.util.List;
 @Getter
 @Value
 public class GetQuestionsByTagsRequest {
+
+    @JsonFormat(with = JsonFormat.Feature.ACCEPT_SINGLE_VALUE_AS_ARRAY)
     @NotNull(message = "There must be at least one tag to filter by")
     @Size(min = 1)
     List<@NotBlank String> tagsToFilterBy;

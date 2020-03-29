@@ -1,7 +1,6 @@
 package pl.agasior.interviewprep.configuration.security;
 
 import lombok.RequiredArgsConstructor;
-import org.apache.http.auth.AUTH;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
@@ -69,8 +68,8 @@ class SecurityConfiguration extends WebSecurityConfigurerAdapter {
                 .and()
                 .authorizeRequests()
                 .antMatchers(AUTH_WHITELIST).permitAll()
-                .antMatchers(HttpMethod.GET, "/question/**")
-                .permitAll()
+                .antMatchers(HttpMethod.GET, "/question/**").permitAll()
+                .antMatchers(HttpMethod.POST, "/question/getQuestionsByTags").permitAll()
                 .antMatchers("/question/status").hasRole(Role.Admin.toString())
                 .and()
                 .authorizeRequests()

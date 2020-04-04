@@ -21,6 +21,6 @@ class QueryFactory {
     }
 
     static Query tagsToFilterBy(List<String> tags) {
-        return new Query(Criteria.where("tags").is(tags));
+        return new Query(Criteria.where("tags").all(tags));
     }
 }

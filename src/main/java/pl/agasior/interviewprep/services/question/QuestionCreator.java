@@ -34,6 +34,7 @@ public class QuestionCreator {
     private Question buildQuestion(final CreateQuestionRequest command) {
         final var user = authenticationFacade.getLoggedUser().orElseThrow(UnauthorizedAccessException::new);
         return Question.builder()
+                .id(questionRepository.nextId())
                 .answer(command.getAnswer())
                 .content(command.getContent())
                 .tags(command.getTags())

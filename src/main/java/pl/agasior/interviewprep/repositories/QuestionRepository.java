@@ -1,6 +1,7 @@
 package pl.agasior.interviewprep.repositories;
 
 import org.springframework.data.mongodb.core.MongoTemplate;
+import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.stereotype.Repository;
 import pl.agasior.interviewprep.dto.GetQuestionsByTagsRequest;
 import pl.agasior.interviewprep.entities.Question;
@@ -30,5 +31,10 @@ public class QuestionRepository  {
 
     public List<Question> findByTags(GetQuestionsByTagsRequest request) {
         return mongoTemplate.find(QueryFactory.tagsToFilterBy(request.getTagsToFilterBy()), Question.class);
+    }
+
+    public String nextId() {
+        final var questionsCount = mongoTemplate.count(new Query(), Question.class);
+        return String.valueOf(questionsCount + 1);
     }
 }

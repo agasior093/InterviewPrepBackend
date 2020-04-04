@@ -6,6 +6,7 @@ import pl.agasior.interviewprep.entities.Question;
 import pl.agasior.interviewprep.repositories.QuestionRepository;
 
 import java.util.List;
+import java.util.Optional;
 
 @Service
 public class QuestionReader {
@@ -22,5 +23,9 @@ public class QuestionReader {
 
     public List<Question> getQuestionsByTags(GetQuestionsByTagsRequest request) {
         return questionRepository.findByTags(request);
+    }
+
+    public Optional<Question> findById(String id) {
+        return questionRepository.findById(id);
     }
 }

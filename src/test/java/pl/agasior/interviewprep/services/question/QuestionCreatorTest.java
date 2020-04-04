@@ -169,6 +169,18 @@ public class QuestionCreatorTest {
         }
 
         @Test
+        void setWithNullTag() throws Exception {
+            final var command = CreateQuestionRequest.builder()
+                    .content("testContent")
+                    .answer("testAnswer")
+                    .tags(Set.of(null)).build();
+
+            mockMvc.perform(requestFactory.createQuestion(command))
+                    .andDo(print())
+                    .andExpect(status().isBadRequest());
+        }
+
+        @Test
         void tooManyTags() throws Exception {
             final var command = CreateQuestionRequest.builder()
                     .content("testContent")

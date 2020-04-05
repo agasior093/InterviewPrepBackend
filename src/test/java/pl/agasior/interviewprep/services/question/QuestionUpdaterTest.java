@@ -20,7 +20,9 @@ import pl.agasior.interviewprep.entities.Question;
 import pl.agasior.interviewprep.entities.Status;
 import pl.agasior.interviewprep.repositories.QuestionRepository;
 import pl.agasior.interviewprep.testutils.DatabasePreparer;
+import pl.agasior.interviewprep.testutils.FakeUserReader;
 import pl.agasior.interviewprep.testutils.RequestFactory;
+import pl.agasior.interviewprep.testutils.UserFactory;
 
 import java.time.LocalDateTime;
 import java.util.Set;
@@ -42,6 +44,9 @@ public class QuestionUpdaterTest {
 
     @Autowired
     private QuestionRepository questionRepository;
+
+    @Autowired
+    private FakeUserReader fakeUserReader;
 
     private final MockMvc mockMvc;
 
@@ -150,6 +155,25 @@ public class QuestionUpdaterTest {
                 Assertions.assertEquals(question.getStatus(), status);
             }, () -> Assertions.fail("Question not found"));
         }
+
+        @Test
+        void incrementFrequency() throws Exception {
+            final var id = questionRepository.save(sampleQuestion()).getId();
+            final var username = "testUser";
+            fakeUserReader.provideUser(UserFactory.user(username));
+
+            mockMvc.perform(requestFactory.updateQuestionFrequency(id))
+                    .andDo(print())
+                    .andExpect(status().isOk());
+
+            questionRepository.findById(id).ifPresentOrElse(question -> {
+                Assertions.assertEquals(question.getAnswer(), sampleQuestion().getAnswer());
+                Assertions.assertEquals(question.getContent(), sampleQuestion().getContent());
+                Assertions.assertEquals(question.getTags(), sampleQuestion().getTags());
+                Assertions.assertEquals(question.getUserId(), sampleQuestion().getUserId());
+                Assertions.assertTrue(question.getFrequencyUserIds().contains(username));
+            }, () -> Assertions.fail("Question not found"));
+        }
     }
 
     @Nested
@@ -243,6 +267,22 @@ public class QuestionUpdaterTest {
             final var mvcResult = mockMvc.perform(requestFactory.updateQuestionStatus(command))
                     .andDo(print())
                     .andExpect(status().isBadRequest());
+        }
+
+        @Test
+        void duplicatedFrequency() throws Exception {
+            final var id = questionRepository.save(sampleQuestion()).getId();
+            final var username = "testUser";
+            fakeUserReader.provideUser(UserFactory.user(username));
+
+            mockMvc.perform(requestFactory.updateQuestionFrequency(id))
+                    .andDo(print())
+                    .andExpect(status().isOk());
+
+            mockMvc.perform(requestFactory.updateQuestionFrequency(id))
+                    .andDo(print())
+                    .andExpect(status().isConflict());
+
         }
     }
 

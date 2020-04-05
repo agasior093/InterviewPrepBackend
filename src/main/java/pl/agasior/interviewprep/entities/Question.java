@@ -20,4 +20,8 @@ public class Question {
     private final String userId;
     private final Set<String> tags;
     private final Status status;
+    /**
+     * id of users who encountered this question on their  interviews
+     */
+    private final Set<String> frequencyUserIds;
 }

@@ -49,6 +49,11 @@ class QuestionController {
         return ResponseEntity.ok(questionUpdater.updateQuestion(request));
     }
 
+    @PatchMapping("/frequency")
+    ResponseEntity<Question> incrementQuestionFrequency(@RequestParam String questionId) {
+        return ResponseEntity.ok(questionUpdater.updateQuestion(questionId));
+    }
+
     @GetMapping("/getQuestionsByTags")
     ResponseEntity<List<Question>> getQuestionsByTags(@RequestBody @Valid GetQuestionsByTagsRequest request) {
         return ResponseEntity.ok(questionReader.getQuestionsByTags(request));

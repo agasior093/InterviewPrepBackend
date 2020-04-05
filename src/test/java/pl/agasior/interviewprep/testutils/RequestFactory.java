@@ -17,7 +17,7 @@ import java.nio.charset.StandardCharsets;
 public class RequestFactory {
     private static final String QUESTION_ENDPOINT = "/question";
     private static final String UPDATE_QUESTION_STATUS_ENDPOINT = QUESTION_ENDPOINT + "/status";
-    private static final String TAG_ENDPOINT = "/tag";
+    private static final String UPDATE_QUESTION_FREQUENCY_ENDPOINT = QUESTION_ENDPOINT + "/frequency";
     private static final String SIGN_UP_ENDPOINT = "/auth/signUp";
 
     private static final String CONTENT_TYPE = "Content-Type";
@@ -41,12 +41,12 @@ public class RequestFactory {
         return patchRequest(UPDATE_QUESTION_STATUS_ENDPOINT, mapper.writeValueAsString(request));
     }
 
-    public MockHttpServletRequestBuilder signUp(SignUpRequest request) throws JsonProcessingException {
-        return postRequest(SIGN_UP_ENDPOINT, mapper.writeValueAsString(request));
+    public MockHttpServletRequestBuilder updateQuestionFrequency(String questionId) throws JsonProcessingException {
+        return patchRequest(UPDATE_QUESTION_FREQUENCY_ENDPOINT, "questionId", questionId);
     }
 
-    public MockHttpServletRequestBuilder getTags() {
-        return getRequest(TAG_ENDPOINT);
+    public MockHttpServletRequestBuilder signUp(SignUpRequest request) throws JsonProcessingException {
+        return postRequest(SIGN_UP_ENDPOINT, mapper.writeValueAsString(request));
     }
 
     private MockHttpServletRequestBuilder postRequest(String url, String body) {
@@ -59,6 +59,13 @@ public class RequestFactory {
     private MockHttpServletRequestBuilder patchRequest(String url, String body) {
         return MockMvcRequestBuilders.patch(url)
                 .content(body)
+                .header(CONTENT_TYPE, APPLICATION_JSON)
+                .characterEncoding(StandardCharsets.UTF_8.name());
+    }
+
+    private MockHttpServletRequestBuilder patchRequest(String url, String paramKey, String paramValue) {
+        return MockMvcRequestBuilders.patch(url)
+                .param(paramKey, paramValue)
                 .header(CONTENT_TYPE, APPLICATION_JSON)
                 .characterEncoding(StandardCharsets.UTF_8.name());
     }

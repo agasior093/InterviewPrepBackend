@@ -17,7 +17,8 @@ class ExceptionResolver {
 
     @ExceptionHandler({
             EmailAlreadyExistsException.class,
-            UserNameAlreadyExistsException.class
+            UserNameAlreadyExistsException.class,
+            DuplicatedQuestionFrequencyException.class
     })
     ResponseEntity<String> handleConflictState(Exception exception, WebRequest request) {
         return new ResponseEntity<>(exception.getMessage(), HttpStatus.CONFLICT);

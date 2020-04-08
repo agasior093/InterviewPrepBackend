@@ -21,6 +21,6 @@ public class QuestionReader {
     }
 
     public List<Question> getQuestionsByTags(GetQuestionsByTagsRequest request) {
-        return questionRepository.findByTags(request);
+        return questionRepository.findByTags(request.getTagsToFilterBy());
     }
 }

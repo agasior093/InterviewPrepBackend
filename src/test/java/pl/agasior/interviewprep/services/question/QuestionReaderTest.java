@@ -10,7 +10,6 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.WebApplicationContext;
 import pl.agasior.interviewprep.dto.CreateQuestionRequest;
-import pl.agasior.interviewprep.dto.GetQuestionsByTagsRequest;
 import pl.agasior.interviewprep.dto.UserDto;
 import pl.agasior.interviewprep.entities.Role;
 import pl.agasior.interviewprep.repositories.QuestionRepository;
@@ -18,8 +17,6 @@ import pl.agasior.interviewprep.testutils.DatabasePreparer;
 import pl.agasior.interviewprep.testutils.FakeUserReader;
 import pl.agasior.interviewprep.testutils.RequestFactory;
 
-import java.util.Arrays;
-import java.util.Collections;
 import java.util.Set;
 
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
@@ -30,6 +27,13 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @ActiveProfiles("test")
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 public class QuestionReaderTest {
+
+    public static final String TEST_CONTENT = "testContent";
+    public static final String TEST_ANSWER = "testAnswer";
+    public static final String TEST_TAG_1 = "testTag1";
+    public static final String TEST_TAG_2 = "testTag2";
+    public static final String TEST_TAG_3 = "testTag3";
+
     @Autowired
     private RequestFactory requestFactory;
 
@@ -54,43 +58,35 @@ public class QuestionReaderTest {
         databasePreparer.clear();
     }
 
-    @Nested
-    class ReadQuestion {
+    @BeforeEach
+    void createUser() {
+        final var user = UserDto.builder().username("admin").roles(Set.of(Role.Admin, Role.User)).build();
+        fakeUserReader.provideUser(user);
+    }
 
-        @Test
-        void findQuestionsByTags() throws Exception {
-            final var user = UserDto.builder().username("admin").roles(Set.of(Role.Admin, Role.User)).build();
-            fakeUserReader.provideUser(user);
+    @Test
+    void findQuestionsByTags() throws Exception {
+        mockMvc.perform(requestFactory.createQuestion(getCreateQuestionRequest(Set.of(TEST_TAG_1, TEST_TAG_2))))
+                .andDo(print())
+                .andExpect(status().isOk());
 
-            final var command = CreateQuestionRequest.builder()
-                    .content("testContent")
-                    .answer("testAnswer")
-                    .tags(Set.of("testTag1", "testTag2")).build();
+        mockMvc.perform(requestFactory.createQuestion(getCreateQuestionRequest(Set.of(TEST_TAG_1, TEST_TAG_2, TEST_TAG_3))))
+                .andDo(print())
+                .andExpect(status().isOk());
 
-            final var command2 = CreateQuestionRequest.builder()
-                    .content("testContent")
-                    .answer("testAnswer")
-                    .tags(Set.of("testTag1", "testTag2", "testTag3")).build();
+        questionRepository.findByTags(Set.of(TEST_TAG_1))
+                .forEach(question -> Assertions.assertTrue(question.getTags().contains(TEST_TAG_1)));
 
-            mockMvc.perform(requestFactory.createQuestion(command))
-                    .andDo(print())
-                    .andExpect(status().isOk())
-                    .andReturn();
+        Assertions.assertEquals(2, questionRepository.findByTags(Set.of(TEST_TAG_1)).size());
 
-            mockMvc.perform(requestFactory.createQuestion(command2))
-                    .andDo(print())
-                    .andExpect(status().isOk())
-                    .andReturn();
+        Assertions.assertEquals(1, questionRepository.findByTags(Set.of(TEST_TAG_1, TEST_TAG_3)).size());
+    }
 
-            questionRepository.findByTags(new GetQuestionsByTagsRequest(Collections.singletonList("testTag1")))
-                            .forEach(quest -> Assertions.assertTrue(quest.getTags().contains("testTag1")));
-
-            Assertions.assertEquals(2, questionRepository.findByTags(
-                    new GetQuestionsByTagsRequest(Collections.singletonList("testTag1"))).size());
-
-            Assertions.assertEquals(1, questionRepository.findByTags(
-                    new GetQuestionsByTagsRequest(Arrays.asList("testTag1", "testTag3"))).size());
-        }
+    private CreateQuestionRequest getCreateQuestionRequest(Set<String> testSet) {
+        return CreateQuestionRequest.builder()
+                .content(TEST_CONTENT)
+                .answer(TEST_ANSWER)
+                .tags(testSet).build();
     }
 
 }

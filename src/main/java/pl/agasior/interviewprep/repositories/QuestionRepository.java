@@ -3,11 +3,11 @@ package pl.agasior.interviewprep.repositories;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.stereotype.Repository;
-import pl.agasior.interviewprep.dto.GetQuestionsByTagsRequest;
 import pl.agasior.interviewprep.entities.Question;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 
 @Repository
 public class QuestionRepository  {
@@ -29,8 +29,8 @@ public class QuestionRepository  {
         return Optional.ofNullable(mongoTemplate.findOne(QueryFactory.idQuery(id), Question.class));
     }
 
-    public List<Question> findByTags(GetQuestionsByTagsRequest request) {
-        return mongoTemplate.find(QueryFactory.tagsToFilterBy(request.getTagsToFilterBy()), Question.class);
+    public List<Question> findByTags(Set<String> tagsToFilterBy) {
+        return mongoTemplate.find(QueryFactory.tagsToFilterBy(tagsToFilterBy), Question.class);
     }
 
     public String nextId() {

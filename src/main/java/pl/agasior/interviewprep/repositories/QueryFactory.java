@@ -3,7 +3,7 @@ package pl.agasior.interviewprep.repositories;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
 
-import java.util.List;
+import java.util.Set;
 
 class QueryFactory {
     QueryFactory() {}
@@ -20,7 +20,7 @@ class QueryFactory {
         return new Query(Criteria.where("email").is(email));
     }
 
-    static Query tagsToFilterBy(List<String> tags) {
-        return new Query(Criteria.where("tags").in(tags));
+    static Query tagsToFilterBy(Set<String> tags) {
+        return new Query(Criteria.where("tags").all(tags));
     }
 }

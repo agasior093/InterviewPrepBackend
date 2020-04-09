@@ -49,7 +49,7 @@ class QuestionController {
         return ResponseEntity.ok(questionUpdater.updateQuestion(request));
     }
 
-    @GetMapping("/getQuestionsByTags")
+    @PostMapping("/getQuestionsByTags")
     ResponseEntity<List<Question>> getQuestionsByTags(@RequestBody @Valid GetQuestionsByTagsRequest request) {
         return ResponseEntity.ok(questionReader.getQuestionsByTags(request));
     }

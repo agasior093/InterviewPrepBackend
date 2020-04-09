@@ -5,11 +5,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.stereotype.Component;
 import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilder;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
-import pl.agasior.interviewprep.dto.CreateQuestionRequest;
-import pl.agasior.interviewprep.dto.SignUpRequest;
-import pl.agasior.interviewprep.dto.UpdateQuestionRequest;
-import pl.agasior.interviewprep.dto.UpdateQuestionStatusRequest;
-import springfox.documentation.spring.web.json.Json;
+import pl.agasior.interviewprep.dto.*;
 
 import java.nio.charset.StandardCharsets;
 
@@ -19,6 +15,7 @@ public class RequestFactory {
     private static final String UPDATE_QUESTION_STATUS_ENDPOINT = QUESTION_ENDPOINT + "/status";
     private static final String TAG_ENDPOINT = "/tag";
     private static final String SIGN_UP_ENDPOINT = "/auth/signUp";
+    private static final String GET_QUESTIONS_BY_TAGS = "/getQuestionsByTags";
 
     private static final String CONTENT_TYPE = "Content-Type";
     private static final String APPLICATION_JSON = "application/json";
@@ -43,6 +40,10 @@ public class RequestFactory {
 
     public MockHttpServletRequestBuilder signUp(SignUpRequest request) throws JsonProcessingException {
         return postRequest(SIGN_UP_ENDPOINT, mapper.writeValueAsString(request));
+    }
+
+    public MockHttpServletRequestBuilder GetQuestionsByTags(GetQuestionsByTagsRequest request) throws JsonProcessingException {
+        return postRequest(QUESTION_ENDPOINT + GET_QUESTIONS_BY_TAGS, mapper.writeValueAsString(request));
     }
 
     public MockHttpServletRequestBuilder getTags() {

@@ -1,6 +1,9 @@
 package pl.agasior.interviewprep.services.question;
 
-import org.junit.jupiter.api.*;
+import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.TestInstance;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -10,16 +13,19 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.WebApplicationContext;
 import pl.agasior.interviewprep.dto.CreateQuestionRequest;
+import pl.agasior.interviewprep.dto.GetQuestionsByTagsRequest;
 import pl.agasior.interviewprep.dto.UserDto;
 import pl.agasior.interviewprep.entities.Role;
-import pl.agasior.interviewprep.repositories.QuestionRepository;
 import pl.agasior.interviewprep.testutils.DatabasePreparer;
 import pl.agasior.interviewprep.testutils.FakeUserReader;
 import pl.agasior.interviewprep.testutils.RequestFactory;
 
 import java.util.Set;
 
+import static org.hamcrest.Matchers.hasItem;
+import static org.hamcrest.Matchers.hasSize;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @ExtendWith(SpringExtension.class)
@@ -41,7 +47,10 @@ public class QuestionReaderTest {
     private DatabasePreparer databasePreparer;
 
     @Autowired
-    private QuestionRepository questionRepository;
+    private QuestionReader questionReader;
+
+    @Autowired
+    private QuestionCreator questionCreator;
 
     @Autowired
     private FakeUserReader fakeUserReader;
@@ -65,21 +74,31 @@ public class QuestionReaderTest {
     }
 
     @Test
-    void findQuestionsByTags() throws Exception {
-        mockMvc.perform(requestFactory.createQuestion(getCreateQuestionRequest(Set.of(TEST_TAG_1, TEST_TAG_2))))
+    void findQuestionsByTagsE2E() throws Exception {
+        questionCreator.createQuestion(getCreateQuestionRequest(Set.of(TEST_TAG_1, TEST_TAG_2)));
+        questionCreator.createQuestion(getCreateQuestionRequest(Set.of(TEST_TAG_1, TEST_TAG_2, TEST_TAG_3)));
+
+        GetQuestionsByTagsRequest getQuestionsByTagsRequest = GetQuestionsByTagsRequest.builder().tagsToFilterBy(Set.of(TEST_TAG_1)).build();
+
+        mockMvc.perform(requestFactory.GetQuestionsByTags(getQuestionsByTagsRequest))
                 .andDo(print())
-                .andExpect(status().isOk());
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$", hasSize(2)))
+                .andExpect(jsonPath("$[:1].tags[*]").value(hasItem(TEST_TAG_1)));
+    }
 
-        mockMvc.perform(requestFactory.createQuestion(getCreateQuestionRequest(Set.of(TEST_TAG_1, TEST_TAG_2, TEST_TAG_3))))
+    @Test
+    void findQuestionsByTagsE2EWithUniqueTag() throws Exception {
+        questionCreator.createQuestion(getCreateQuestionRequest(Set.of(TEST_TAG_1, TEST_TAG_2)));
+        questionCreator.createQuestion(getCreateQuestionRequest(Set.of(TEST_TAG_1, TEST_TAG_2, TEST_TAG_3)));
+
+        GetQuestionsByTagsRequest getQuestionsByTagsRequest = GetQuestionsByTagsRequest.builder().tagsToFilterBy(Set.of(TEST_TAG_1, TEST_TAG_3)).build();
+
+        mockMvc.perform(requestFactory.GetQuestionsByTags(getQuestionsByTagsRequest))
                 .andDo(print())
-                .andExpect(status().isOk());
-
-        questionRepository.findByTags(Set.of(TEST_TAG_1))
-                .forEach(question -> Assertions.assertTrue(question.getTags().contains(TEST_TAG_1)));
-
-        Assertions.assertEquals(2, questionRepository.findByTags(Set.of(TEST_TAG_1)).size());
-
-        Assertions.assertEquals(1, questionRepository.findByTags(Set.of(TEST_TAG_1, TEST_TAG_3)).size());
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$", hasSize(1)))
+                .andExpect(jsonPath("$[:1].tags[*]").value(hasItem(TEST_TAG_3)));
     }
 
     private CreateQuestionRequest getCreateQuestionRequest(Set<String> testSet) {
